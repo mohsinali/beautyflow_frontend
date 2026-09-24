@@ -1,0 +1,58 @@
+import {
+  BarChart3,
+  Building2,
+  CalendarHeart,
+  ContactRound,
+  LayoutDashboard,
+  Scissors,
+  Settings,
+  ShoppingBag,
+  Store,
+  UsersRound,
+} from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
+import { permissions } from '@/lib/permissions/permissions';
+import type { Session, TenantRole } from '@/types/session';
+
+export interface NavigationItem {
+  key: string;
+  href: string;
+  icon: LucideIcon;
+  disabled?: boolean;
+}
+
+const owner: NavigationItem[] = [
+  { key: 'dashboard', href: '/dashboard', icon: LayoutDashboard },
+  { key: 'catalog', href: '#catalog', icon: Scissors, disabled: true },
+  { key: 'providers', href: '#providers', icon: ContactRound, disabled: true },
+  { key: 'customers', href: '#customers', icon: UsersRound, disabled: true },
+  { key: 'visits', href: '#visits', icon: ShoppingBag, disabled: true },
+  { key: 'reports', href: '#reports', icon: BarChart3, disabled: true },
+  { key: 'branches', href: '#branches', icon: Store, disabled: true },
+  { key: 'staff', href: '#staff', icon: CalendarHeart, disabled: true },
+  { key: 'settings', href: '/dashboard/settings', icon: Settings },
+];
+
+const byTenantRole: Record<TenantRole, NavigationItem[]> = {
+  SALON_OWNER: owner,
+  RECEPTIONIST: owner.filter((item) =>
+    ['dashboard', 'catalog', 'providers', 'customers', 'visits'].includes(item.key),
+  ),
+  SERVICE_PROVIDER: owner.filter((item) =>
+    ['dashboard', 'catalog', 'providers'].includes(item.key),
+  ),
+};
+
+const platform: NavigationItem[] = [
+  { key: 'platformDashboard', href: '/dashboard', icon: LayoutDashboard },
+  { key: 'tenants', href: '#tenants', icon: Building2, disabled: true },
+];
+
+export function navigationFor(session: Session) {
+  if (session.platformRole === 'SUPER_ADMIN') return platform;
+  if (!session.tenant) return [];
+  return byTenantRole[session.tenant.role].filter(
+    (item) =>
+      item.key !== 'settings' || session.permissions.includes(permissions.tenantSettingsView),
+  );
+}
