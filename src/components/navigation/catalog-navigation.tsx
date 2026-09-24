@@ -18,6 +18,9 @@ export function CatalogNavigation() {
     can(permissions.catalogRead)
       ? { href: '/dashboard/catalog/services', label: t('services') }
       : null,
+    can(permissions.catalogRead)
+      ? { href: '/dashboard/catalog/branch-services', label: t('branchServices') }
+      : null,
   ].filter((item): item is { href: string; label: string } => Boolean(item));
 
   if (items.length < 2) return null;

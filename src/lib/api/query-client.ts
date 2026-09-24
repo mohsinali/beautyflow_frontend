@@ -33,6 +33,20 @@ export const queryKeys = {
       pageSize: number;
     },
   ) => [...queryKeys.catalogServices(tenantId), 'list', params] as const,
+  branchServices: (tenantId: string, branchId: string) =>
+    queryKeys.branch(tenantId, branchId, 'catalog-services'),
+  branchServiceList: (
+    tenantId: string,
+    branchId: string,
+    params: {
+      search: string;
+      categoryId: string;
+      availability: 'all' | 'enabled' | 'disabled';
+      includeInactive: boolean;
+      page: number;
+      pageSize: number;
+    },
+  ) => [...queryKeys.branchServices(tenantId, branchId), 'list', params] as const,
   branch: (tenantId: string, branchId: string, resource: string) =>
     ['tenant', tenantId, 'branch', branchId, resource] as const,
 };

@@ -22,6 +22,7 @@ export const permissions = {
   catalogCreate: 'catalog-service:create',
   catalogUpdate: 'catalog-service:update',
   catalogDeactivate: 'catalog-service:deactivate',
+  catalogConfigureBranch: 'catalog-service:configure-branch',
   providerRead: 'service-provider:read',
   platformTenantView: 'platform.tenant.view',
 } as const;
@@ -48,6 +49,7 @@ const ownerPermissions = [
   permissions.catalogCreate,
   permissions.catalogUpdate,
   permissions.catalogDeactivate,
+  permissions.catalogConfigureBranch,
   permissions.providerRead,
 ];
 

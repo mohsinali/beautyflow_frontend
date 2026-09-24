@@ -2,11 +2,14 @@
 
 import { MapPin } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { useIsMutating } from '@tanstack/react-query';
+import { branchServiceMutationKey } from '@/features/branch-services/hooks/use-branch-services';
 import { useSession } from '@/providers/session-provider';
 
 export function BranchSelector() {
   const t = useTranslations();
   const { session, activeBranch, setActiveBranch } = useSession();
+  const branchServiceMutations = useIsMutating({ mutationKey: branchServiceMutationKey });
   if (!session?.tenant || session.accessibleBranches.length === 0) return null;
   if (session.accessibleBranches.length === 1) {
     return (
@@ -29,6 +32,7 @@ export function BranchSelector() {
       <select
         className="min-h-10 max-w-44 appearance-none bg-transparent pe-8 outline-none"
         value={activeBranch?.id ?? ''}
+        disabled={branchServiceMutations > 0}
         onChange={(event) => setActiveBranch(event.target.value)}
       >
         <option value="">{t('common.selectBranch')}</option>
