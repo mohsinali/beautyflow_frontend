@@ -4,7 +4,13 @@ import {
   validateMutationOrigin,
 } from '@/lib/auth/server';
 
-const allowed = [/^branches(?:\/[^/]+)?$/, /^tenant\/settings$/, /^platform\/tenants(?:\/[^/]+)?$/];
+const allowed = [
+  /^branches(?:\/[^/]+)?$/,
+  /^tenant\/settings$/,
+  /^platform\/tenants(?:\/[^/]+)?$/,
+  /^service-categories(?:\/[^/]+(?:\/(?:deactivate|reactivate))?)?$/,
+  /^catalog-services(?:\/[^/]+(?:\/(?:deactivate|reactivate))?)?$/,
+];
 
 async function proxy(request: Request, context: { params: Promise<{ path: string[] }> }) {
   const { path } = await context.params;

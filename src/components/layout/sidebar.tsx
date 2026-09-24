@@ -40,7 +40,11 @@ export function Sidebar({
       <nav className="flex-1 space-y-1 overflow-y-auto p-3">
         {items.map((item) => {
           const Icon = item.icon;
-          const active = !item.disabled && pathname === item.href;
+          const active =
+            !item.disabled &&
+            ((item.key === 'catalog' && pathname.startsWith('/dashboard/catalog/')) ||
+              pathname === item.href ||
+              (item.href !== '/dashboard' && pathname.startsWith(`${item.href}/`)));
           const content = (
             <>
               <Icon className="size-5 shrink-0" aria-hidden="true" />

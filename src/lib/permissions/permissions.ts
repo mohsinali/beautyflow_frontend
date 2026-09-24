@@ -14,7 +14,14 @@ export const permissions = {
   membershipRoleAssign: 'membership.role.assign',
   branchAccessAssign: 'branch.access.assign',
   profileViewOwn: 'profile.view.own',
+  serviceCategoryCreate: 'service-category:create',
+  serviceCategoryRead: 'service-category:read',
+  serviceCategoryUpdate: 'service-category:update',
+  serviceCategoryDeactivate: 'service-category:deactivate',
   catalogRead: 'catalog-service:read',
+  catalogCreate: 'catalog-service:create',
+  catalogUpdate: 'catalog-service:update',
+  catalogDeactivate: 'catalog-service:deactivate',
   providerRead: 'service-provider:read',
   platformTenantView: 'platform.tenant.view',
 } as const;
@@ -33,13 +40,21 @@ const ownerPermissions = [
   permissions.membershipRoleAssign,
   permissions.branchAccessAssign,
   permissions.profileViewOwn,
+  permissions.serviceCategoryCreate,
+  permissions.serviceCategoryRead,
+  permissions.serviceCategoryUpdate,
+  permissions.serviceCategoryDeactivate,
   permissions.catalogRead,
+  permissions.catalogCreate,
+  permissions.catalogUpdate,
+  permissions.catalogDeactivate,
   permissions.providerRead,
 ];
 
 const staffPermissions = [
   permissions.branchView,
   permissions.profileViewOwn,
+  permissions.serviceCategoryRead,
   permissions.catalogRead,
   permissions.providerRead,
 ];

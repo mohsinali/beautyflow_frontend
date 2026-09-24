@@ -5,7 +5,17 @@ import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { ApiError } from '@/lib/api/error';
 
-export function ErrorState({ error, onRetry }: { error: Error; onRetry?: () => void }) {
+export function ErrorState({
+  error,
+  onRetry,
+  title,
+  description,
+}: {
+  error: Error;
+  onRetry?: () => void;
+  title?: string;
+  description?: string;
+}) {
   const t = useTranslations();
   const apiError = error instanceof ApiError ? error : null;
   const network = apiError?.code === 'NETWORK_ERROR';
@@ -19,9 +29,9 @@ export function ErrorState({ error, onRetry }: { error: Error; onRetry?: () => v
       ) : (
         <AlertTriangle className="mx-auto size-7 text-destructive" />
       )}
-      <h2 className="mt-3 font-semibold">{t('errors.title')}</h2>
+      <h2 className="mt-3 font-semibold">{title ?? t('errors.title')}</h2>
       <p className="mt-1 text-sm text-muted-foreground">
-        {network ? t('errors.network') : t('errors.description')}
+        {description ?? (network ? t('errors.network') : t('errors.description'))}
       </p>
       {apiError?.requestId && (
         <p className="mt-2 font-mono text-xs text-muted-foreground">

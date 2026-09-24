@@ -23,7 +23,7 @@ export interface NavigationItem {
 
 const owner: NavigationItem[] = [
   { key: 'dashboard', href: '/dashboard', icon: LayoutDashboard },
-  { key: 'catalog', href: '#catalog', icon: Scissors, disabled: true },
+  { key: 'catalog', href: '/dashboard/catalog/categories', icon: Scissors },
   { key: 'providers', href: '#providers', icon: ContactRound, disabled: true },
   { key: 'customers', href: '#customers', icon: UsersRound, disabled: true },
   { key: 'visits', href: '#visits', icon: ShoppingBag, disabled: true },
@@ -51,8 +51,21 @@ const platform: NavigationItem[] = [
 export function navigationFor(session: Session) {
   if (session.platformRole === 'SUPER_ADMIN') return platform;
   if (!session.tenant) return [];
-  return byTenantRole[session.tenant.role].filter(
-    (item) =>
-      item.key !== 'settings' || session.permissions.includes(permissions.tenantSettingsView),
-  );
+  return byTenantRole[session.tenant.role]
+    .filter((item) => {
+      if (item.key === 'catalog') {
+        return (
+          session.permissions.includes(permissions.serviceCategoryRead) ||
+          session.permissions.includes(permissions.catalogRead)
+        );
+      }
+      return (
+        item.key !== 'settings' || session.permissions.includes(permissions.tenantSettingsView)
+      );
+    })
+    .map((item) =>
+      item.key === 'catalog' && !session.permissions.includes(permissions.serviceCategoryRead)
+        ? { ...item, href: '/dashboard/catalog/services' }
+        : item,
+    );
 }

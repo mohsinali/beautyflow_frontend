@@ -17,6 +17,22 @@ export function createQueryClient() {
 
 export const queryKeys = {
   session: ['session'] as const,
+  serviceCategories: (tenantId: string) => ['tenant', tenantId, 'service-categories'] as const,
+  serviceCategoryList: (
+    tenantId: string,
+    params: { search: string; isActive: boolean; page: number; pageSize: number },
+  ) => [...queryKeys.serviceCategories(tenantId), 'list', params] as const,
+  catalogServices: (tenantId: string) => ['tenant', tenantId, 'catalog-services'] as const,
+  catalogServiceList: (
+    tenantId: string,
+    params: {
+      search: string;
+      categoryId: string;
+      isActive: boolean;
+      page: number;
+      pageSize: number;
+    },
+  ) => [...queryKeys.catalogServices(tenantId), 'list', params] as const,
   branch: (tenantId: string, branchId: string, resource: string) =>
     ['tenant', tenantId, 'branch', branchId, resource] as const,
 };
