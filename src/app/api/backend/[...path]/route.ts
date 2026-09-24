@@ -6,6 +6,7 @@ import {
 
 const allowed = [
   /^branches(?:\/[^/]+)?$/,
+  /^branches\/[^/]+\/catalog-services(?:\/[^/]+)?$/,
   /^tenant\/settings$/,
   /^platform\/tenants(?:\/[^/]+)?$/,
   /^service-categories(?:\/[^/]+(?:\/(?:deactivate|reactivate))?)?$/,
