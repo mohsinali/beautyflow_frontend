@@ -10,6 +10,8 @@ const allowed = [
   /^platform\/tenants(?:\/[^/]+)?$/,
   /^service-categories(?:\/[^/]+(?:\/(?:deactivate|reactivate))?)?$/,
   /^catalog-services(?:\/[^/]+(?:\/(?:deactivate|reactivate))?)?$/,
+  /^service-providers(?:\/(?:available-memberships|[^/]+(?:\/(?:deactivate|reactivate|photo|qualifications(?:\/[^/]+)?))?))?$/,
+  /^memberships\/[^/]+\/branches\/[^/]+$/,
 ];
 
 async function proxy(request: Request, context: { params: Promise<{ path: string[] }> }) {
@@ -36,7 +38,7 @@ async function proxy(request: Request, context: { params: Promise<{ path: string
   const response = await authenticatedFetch(`/${joined}${source.search}`, {
     method: request.method,
     headers,
-    body: ['GET', 'HEAD'].includes(request.method) ? undefined : await request.text(),
+    body: ['GET', 'HEAD'].includes(request.method) ? undefined : await request.arrayBuffer(),
   });
   return safeUpstreamResponse(response);
 }

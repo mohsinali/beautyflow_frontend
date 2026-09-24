@@ -49,4 +49,18 @@ export const queryKeys = {
   ) => [...queryKeys.branchServices(tenantId, branchId), 'list', params] as const,
   branch: (tenantId: string, branchId: string, resource: string) =>
     ['tenant', tenantId, 'branch', branchId, resource] as const,
+  serviceProviders: (tenantId: string) => ['tenant', tenantId, 'service-providers'] as const,
+  serviceProviderList: (
+    tenantId: string,
+    params: {
+      search: string;
+      branchId: string;
+      catalogServiceId: string;
+      isActive: boolean;
+      page: number;
+      pageSize: number;
+    },
+  ) => [...queryKeys.serviceProviders(tenantId), 'list', params] as const,
+  serviceProviderDetail: (tenantId: string, providerId: string) =>
+    [...queryKeys.serviceProviders(tenantId), 'detail', providerId] as const,
 };

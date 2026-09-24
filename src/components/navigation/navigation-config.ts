@@ -24,7 +24,7 @@ export interface NavigationItem {
 const owner: NavigationItem[] = [
   { key: 'dashboard', href: '/dashboard', icon: LayoutDashboard },
   { key: 'catalog', href: '/dashboard/catalog/categories', icon: Scissors },
-  { key: 'providers', href: '#providers', icon: ContactRound, disabled: true },
+  { key: 'providers', href: '/dashboard/service-providers', icon: ContactRound },
   { key: 'customers', href: '#customers', icon: UsersRound, disabled: true },
   { key: 'visits', href: '#visits', icon: ShoppingBag, disabled: true },
   { key: 'reports', href: '#reports', icon: BarChart3, disabled: true },
@@ -59,6 +59,7 @@ export function navigationFor(session: Session) {
           session.permissions.includes(permissions.catalogRead)
         );
       }
+      if (item.key === 'providers') return session.permissions.includes(permissions.providerRead);
       return (
         item.key !== 'settings' || session.permissions.includes(permissions.tenantSettingsView)
       );

@@ -1,7 +1,7 @@
 import { ApiError, parseApiError } from './error';
 
 export interface ApiRequestOptions extends Omit<RequestInit, 'body'> {
-  body?: unknown;
+  body?: unknown | FormData;
   branchId?: string;
   timeoutMs?: number;
 }
@@ -32,7 +32,9 @@ export async function apiRequest<T>(
   const controller = new AbortController();
   const timeout = window.setTimeout(() => controller.abort(), options.timeoutMs ?? 15_000);
   const headers = new Headers(options.headers);
-  if (options.body !== undefined) headers.set('content-type', 'application/json');
+  if (options.body !== undefined && !(options.body instanceof FormData)) {
+    headers.set('content-type', 'application/json');
+  }
   if (options.branchId) headers.set('x-branch-id', options.branchId);
   if (options.method && options.method !== 'GET' && options.method !== 'HEAD') {
     headers.set('x-beautyflow-request', 'browser');
@@ -41,7 +43,12 @@ export async function apiRequest<T>(
   try {
     const response = await fetch(path, {
       ...options,
-      body: options.body === undefined ? undefined : JSON.stringify(options.body),
+      body:
+        options.body === undefined
+          ? undefined
+          : options.body instanceof FormData
+            ? options.body
+            : JSON.stringify(options.body),
       credentials: 'same-origin',
       headers,
       signal: options.signal ?? controller.signal,

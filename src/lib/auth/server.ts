@@ -138,11 +138,14 @@ export async function validateMutationOrigin(request: Request) {
 }
 
 export async function safeUpstreamResponse(response: Response) {
-  const text = await response.text();
-  return new Response(text, {
+  const body = await response.arrayBuffer();
+  return new Response(body, {
     status: response.status,
     headers: {
       'content-type': response.headers.get('content-type') ?? 'application/json',
+      ...(response.headers.get('cache-control')
+        ? { 'cache-control': response.headers.get('cache-control')! }
+        : {}),
       ...(response.headers.get('x-request-id')
         ? { 'x-request-id': response.headers.get('x-request-id')! }
         : {}),
