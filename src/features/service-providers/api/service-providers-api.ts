@@ -6,6 +6,7 @@ import type {
   ProviderBranch,
   ProviderProfileInput,
   ProviderService,
+  OnboardProviderResult,
   ServiceProvider,
   ServiceProviderList,
   ServiceProviderListParams,
@@ -44,7 +45,7 @@ export const listAvailableMemberships = (signal?: AbortSignal) =>
   ).then((value) => value.data);
 
 export const createServiceProvider = (input: CreateProviderInput) =>
-  apiRequest<Envelope<ServiceProvider>>('/api/backend/service-providers', {
+  apiRequest<Envelope<OnboardProviderResult>>('/api/backend/service-providers/onboard', {
     method: 'POST',
     body: input,
   }).then((value) => value.data);
@@ -58,6 +59,12 @@ export const updateServiceProvider = (providerId: string, input: ProviderProfile
 export const setServiceProviderActive = (providerId: string, isActive: boolean) =>
   apiRequest<Envelope<ServiceProvider>>(
     `/api/backend/service-providers/${providerId}/${isActive ? 'reactivate' : 'deactivate'}`,
+    { method: 'POST' },
+  ).then((value) => value.data);
+
+export const resendProviderInvitation = (providerId: string) =>
+  apiRequest<Envelope<{ invitationStatus: 'SENT' | 'PENDING' }>>(
+    `/api/backend/service-providers/${providerId}/resend-invitation`,
     { method: 'POST' },
   ).then((value) => value.data);
 

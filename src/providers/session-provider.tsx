@@ -30,6 +30,11 @@ interface SessionContextValue {
 }
 
 const SessionContext = createContext<SessionContextValue | null>(null);
+const PUBLIC_SESSION_ROUTES = new Set(['/login', '/accept-invitation']);
+
+export function isPublicSessionRoute(pathname: string): boolean {
+  return PUBLIC_SESSION_ROUTES.has(pathname);
+}
 
 function storageKey(session: Session) {
   return session.tenant ? `beautyflow:branch:${session.user.id}:${session.tenant.id}` : null;
@@ -38,6 +43,7 @@ function storageKey(session: Session) {
 export function SessionProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
+  const isPublicRoute = isPublicSessionRoute(pathname);
   const queryClient = useQueryClient();
   const [selectedBranchId, setSelectedBranchId] = useState<string | null>(null);
   const sessionQuery = useQuery({
@@ -46,6 +52,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       apiRequest<SessionEnvelope>('/api/auth/session', {}, false).then((result) => result.data),
     retry: false,
     staleTime: 60_000,
+    enabled: !isPublicRoute,
   });
 
   const activeBranch = useMemo(() => {
@@ -73,10 +80,10 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   }, [activeBranch, sessionQuery.data]);
 
   useEffect(() => {
-    if (!sessionQuery.isLoading && sessionQuery.isError && pathname !== '/login') {
+    if (!isPublicRoute && !sessionQuery.isLoading && sessionQuery.isError) {
       router.replace('/login?reason=expired');
     }
-  }, [pathname, router, sessionQuery.isError, sessionQuery.isLoading]);
+  }, [isPublicRoute, router, sessionQuery.isError, sessionQuery.isLoading]);
 
   const setActiveBranch = useCallback(
     (id: string) => {

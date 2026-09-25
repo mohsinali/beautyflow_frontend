@@ -19,6 +19,7 @@ import {
   useProviderBranches,
   useRemoveProviderBranch,
   useRemoveProviderService,
+  useResendProviderInvitation,
   useServiceProvider,
   useSetServiceProviderActive,
 } from '../hooks/use-service-providers';
@@ -305,8 +306,10 @@ export function ProviderDetail({ providerId }: { providerId: string }) {
   const canStatus = can(permissions.providerDeactivate);
   const canBranches = can(permissions.branchAccessAssign);
   const canServices = can(permissions.providerManageQualifications);
+  const canInvite = can(permissions.providerCreate);
   const query = useServiceProvider(tenantId, providerId, canView);
   const status = useSetServiceProviderActive(tenantId);
+  const resend = useResendProviderInvitation(tenantId, providerId);
   const [editOpen, setEditOpen] = useState(false);
   const [editTrigger, setEditTrigger] = useState<HTMLElement | null>(null);
   if (!canView || !tenantId)
@@ -375,6 +378,18 @@ export function ProviderDetail({ providerId }: { providerId: string }) {
       toast.error(t('providers.statusFailed'));
     }
   }
+  async function resendInvitation() {
+    try {
+      const result = await resend.mutateAsync();
+      toast[result.invitationStatus === 'SENT' ? 'success' : 'warning'](
+        result.invitationStatus === 'SENT'
+          ? t('providers.invitationResent')
+          : t('providers.invitationPendingNotice'),
+      );
+    } catch {
+      toast.error(t('providers.invitationResendFailed'));
+    }
+  }
   return (
     <div className="space-y-6">
       <Button asChild variant="ghost">
@@ -420,6 +435,29 @@ export function ProviderDetail({ providerId }: { providerId: string }) {
           )}
         </div>
       </header>
+      <Card>
+        <CardContent className="flex flex-col gap-3 pt-6 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="text-xs text-muted-foreground">{t('providers.invitationStatus')}</p>
+            <p className="font-medium">
+              {t(`providers.accountStatuses.${provider.accountStatus}`)}
+            </p>
+          </div>
+          {canInvite &&
+            ['INVITATION_PENDING', 'INVITATION_SENT', 'INVITATION_EXPIRED'].includes(
+              provider.accountStatus,
+            ) && (
+              <Button
+                variant="outline"
+                disabled={resend.isPending}
+                onClick={() => void resendInvitation()}
+              >
+                {resend.isPending && <LoaderCircle className="size-4 animate-spin" />}
+                {resend.isPending ? t('providers.resending') : t('providers.resendInvitation')}
+              </Button>
+            )}
+        </CardContent>
+      </Card>
       <Card>
         <CardContent className="pt-6">
           <ProviderPhoto tenantId={tenantId} provider={provider} canEdit={canEdit} />

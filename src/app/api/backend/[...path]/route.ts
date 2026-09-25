@@ -11,7 +11,7 @@ const allowed = [
   /^platform\/tenants(?:\/[^/]+)?$/,
   /^service-categories(?:\/[^/]+(?:\/(?:deactivate|reactivate))?)?$/,
   /^catalog-services(?:\/[^/]+(?:\/(?:deactivate|reactivate))?)?$/,
-  /^service-providers(?:\/(?:available-memberships|[^/]+(?:\/(?:deactivate|reactivate|photo|qualifications(?:\/[^/]+)?))?))?$/,
+  /^service-providers(?:\/(?:available-memberships|onboard|[^/]+(?:\/(?:deactivate|reactivate|photo|resend-invitation|qualifications(?:\/[^/]+)?))?))?$/,
   /^memberships\/[^/]+\/branches\/[^/]+$/,
 ];
 

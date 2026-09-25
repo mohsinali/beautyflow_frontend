@@ -26,6 +26,12 @@ export interface ServiceProvider {
   photoUrl: string | null;
   isActive: boolean;
   effectivelyActive: boolean;
+  accountStatus:
+    | 'INVITATION_PENDING'
+    | 'INVITATION_SENT'
+    | 'INVITATION_EXPIRED'
+    | 'ACCOUNT_ACTIVE'
+    | 'ACCOUNT_INACTIVE';
   createdAt: string;
   updatedAt: string;
   user: { id: string; email: string; firstName: string; lastName: string; status: string };
@@ -63,5 +69,12 @@ export interface ProviderProfileInput {
 }
 
 export interface CreateProviderInput extends ProviderProfileInput {
-  membershipId: string;
+  email: string;
+  isActive: boolean;
+}
+
+export interface OnboardProviderResult {
+  provider: ServiceProvider;
+  accountState: 'INVITATION_REQUIRED' | 'ACCOUNT_ACTIVE';
+  invitationStatus: 'SENT' | 'PENDING';
 }

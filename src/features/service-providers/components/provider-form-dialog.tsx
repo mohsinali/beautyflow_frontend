@@ -18,19 +18,16 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ApiError } from '@/lib/api/error';
 import { providerSchema, type ProviderFormValues } from '../schemas/provider-schema';
-import {
-  useAvailableProviderMemberships,
-  useCreateServiceProvider,
-  useUpdateServiceProvider,
-} from '../hooks/use-service-providers';
+import { useCreateServiceProvider, useUpdateServiceProvider } from '../hooks/use-service-providers';
 import type { ServiceProvider } from '../types/service-provider';
 
 const valuesFor = (provider: ServiceProvider | null): ProviderFormValues => ({
-  membershipId: provider?.membershipId ?? '',
+  email: provider?.user.email ?? '',
   displayName: provider?.displayName ?? '',
   phone: provider?.phone ?? '',
   jobTitle: provider?.jobTitle ?? '',
   bio: provider?.bio ?? '',
+  isActive: provider?.isActive ?? true,
 });
 
 export function ProviderFormDialog({
@@ -49,7 +46,6 @@ export function ProviderFormDialog({
   onOpenChange: (open: boolean) => void;
 }) {
   const t = useTranslations();
-  const memberships = useAvailableProviderMemberships(tenantId, open && !provider);
   const create = useCreateServiceProvider(tenantId);
   const update = useUpdateServiceProvider(tenantId);
   const resetCreate = create.reset;
@@ -57,15 +53,19 @@ export function ProviderFormDialog({
   const mutation = provider ? update : create;
   const schema = useMemo(
     () =>
-      providerSchema({
-        membershipRequired: t('providers.validation.membershipRequired'),
-        nameRequired: t('providers.validation.nameRequired'),
-        nameTooLong: t('providers.validation.nameTooLong'),
-        phoneTooLong: t('providers.validation.phoneTooLong'),
-        jobTitleTooLong: t('providers.validation.jobTitleTooLong'),
-        bioTooLong: t('providers.validation.bioTooLong'),
-      }),
-    [t],
+      providerSchema(
+        {
+          emailRequired: t('providers.validation.emailRequired'),
+          emailInvalid: t('providers.validation.emailInvalid'),
+          nameRequired: t('providers.validation.nameRequired'),
+          nameTooLong: t('providers.validation.nameTooLong'),
+          phoneTooLong: t('providers.validation.phoneTooLong'),
+          jobTitleTooLong: t('providers.validation.jobTitleTooLong'),
+          bioTooLong: t('providers.validation.bioTooLong'),
+        },
+        !provider,
+      ),
+    [t, provider],
   );
   const {
     register,
@@ -91,6 +91,15 @@ export function ProviderFormDialog({
       return t('providers.membershipExists');
     if (error instanceof ApiError && error.code === 'MEMBERSHIP_NOT_SERVICE_PROVIDER')
       return t('providers.membershipUnavailable');
+    if (error instanceof ApiError && error.code === 'MEMBERSHIP_ROLE_CONFLICT')
+      return t('providers.roleConflict');
+    if (error instanceof ApiError && error.code === 'SERVICE_PROVIDER_EXISTS')
+      return t('providers.providerExists');
+    if (
+      error instanceof ApiError &&
+      ['USER_REQUIRES_ATTENTION', 'MEMBERSHIP_REQUIRES_ATTENTION'].includes(error.code ?? '')
+    )
+      return t('providers.accountAttention');
     if (error instanceof ApiError && error.status === 403) return t('errors.forbidden');
     const message = t('providers.saveFailed');
     return error instanceof ApiError && error.requestId
@@ -110,9 +119,15 @@ export function ProviderFormDialog({
         await update.mutateAsync({ providerId: provider.id, input: profile });
         toast.success(t('providers.updated'));
       } else {
-        const created = await create.mutateAsync({ ...profile, membershipId: values.membershipId });
+        const created = await create.mutateAsync({
+          ...profile,
+          email: values.email.trim(),
+          isActive: values.isActive,
+        });
         toast.success(t('providers.created'));
-        onCreated?.(created);
+        if (created.invitationStatus === 'SENT') toast.success(t('providers.invitationSentNotice'));
+        else toast.warning(t('providers.invitationPendingNotice'));
+        onCreated?.(created.provider);
       }
       onOpenChange(false);
     } catch (error) {
@@ -147,35 +162,18 @@ export function ProviderFormDialog({
         <form className="mt-6 space-y-5" onSubmit={handleSubmit(submit)} noValidate>
           {!provider && (
             <div className="space-y-2">
-              <Label htmlFor="provider-membership">{t('providers.membership')} *</Label>
-              <select
-                id="provider-membership"
-                className="min-h-11 w-full rounded-xl border border-input bg-background px-3 text-start text-sm"
-                disabled={memberships.isLoading || memberships.isError}
-                {...register('membershipId')}
-              >
-                <option value="">
-                  {memberships.isLoading
-                    ? t('providers.membershipsLoading')
-                    : t('providers.selectMembership')}
-                </option>
-                {memberships.data?.map((item) => (
-                  <option key={item.id} value={item.id}>
-                    {item.user.firstName} {item.user.lastName} — {item.user.email}
-                  </option>
-                ))}
-              </select>
-              {memberships.isError && (
-                <p className="text-sm text-destructive">{t('providers.membershipsFailed')}</p>
-              )}
-              {memberships.data?.length === 0 && (
-                <p className="text-sm text-muted-foreground">
-                  {t('providers.noAvailableMemberships')}
-                </p>
-              )}
-              {errors.membershipId && (
+              <Label htmlFor="provider-email">{t('providers.loginEmail')} *</Label>
+              <Input
+                id="provider-email"
+                type="email"
+                autoComplete="email"
+                dir="ltr"
+                aria-invalid={Boolean(errors.email)}
+                {...register('email')}
+              />
+              {errors.email && (
                 <p className="text-sm text-destructive" role="alert">
-                  {errors.membershipId.message}
+                  {errors.email.message}
                 </p>
               )}
             </div>
@@ -231,6 +229,12 @@ export function ProviderFormDialog({
               </p>
             )}
           </div>
+          {!provider && (
+            <label className="flex items-center gap-3 rounded-xl border border-input p-3">
+              <input type="checkbox" className="size-4" {...register('isActive')} />
+              <span>{t('providers.activeStatus')}</span>
+            </label>
+          )}
           {errors.root && (
             <p className="text-sm text-destructive" role="alert">
               {errors.root.message}
@@ -242,12 +246,11 @@ export function ProviderFormDialog({
                 {t('common.cancel')}
               </Button>
             </DialogClose>
-            <Button
-              type="submit"
-              disabled={pending || (!provider && memberships.data?.length === 0)}
-            >
+            <Button type="submit" disabled={pending}>
               {pending && <LoaderCircle className="size-4 animate-spin" />}
-              {pending ? t('providers.saving') : t('providers.saveChanges')}
+              {pending
+                ? t(provider ? 'providers.saving' : 'providers.creating')
+                : t(provider ? 'providers.saveChanges' : 'providers.createProvider')}
             </Button>
           </div>
         </form>

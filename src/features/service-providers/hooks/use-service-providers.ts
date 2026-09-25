@@ -12,6 +12,7 @@ import {
   removeProviderBranch,
   removeProviderPhoto,
   removeProviderService,
+  resendProviderInvitation,
   replaceProviderServices,
   setServiceProviderActive,
   updateServiceProvider,
@@ -82,7 +83,14 @@ export function useCreateServiceProvider(tenantId: string) {
   const invalidate = useProviderInvalidation(tenantId);
   return useMutation({
     mutationFn: (input: CreateProviderInput) => createServiceProvider(input),
-    onSuccess: (provider) => invalidate(provider.id),
+    onSuccess: (result) => invalidate(result.provider.id),
+  });
+}
+export function useResendProviderInvitation(tenantId: string, providerId: string) {
+  const invalidate = useProviderInvalidation(tenantId);
+  return useMutation({
+    mutationFn: () => resendProviderInvitation(providerId),
+    onSuccess: () => invalidate(providerId),
   });
 }
 export function useUpdateServiceProvider(tenantId: string) {
