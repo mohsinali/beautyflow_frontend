@@ -13,6 +13,7 @@ const allowed = [
   /^catalog-services(?:\/[^/]+(?:\/(?:deactivate|reactivate))?)?$/,
   /^service-providers(?:\/(?:available-memberships|onboard|[^/]+(?:\/(?:deactivate|reactivate|photo|resend-invitation|qualifications(?:\/[^/]+)?))?))?$/,
   /^memberships\/[^/]+\/branches\/[^/]+$/,
+  /^customers(?:\/[^/]+(?:\/(?:deactivate|reactivate))?)?$/,
 ];
 
 async function proxy(request: Request, context: { params: Promise<{ path: string[] }> }) {

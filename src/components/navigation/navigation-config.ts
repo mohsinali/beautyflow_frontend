@@ -25,7 +25,7 @@ const owner: NavigationItem[] = [
   { key: 'dashboard', href: '/dashboard', icon: LayoutDashboard },
   { key: 'catalog', href: '/dashboard/catalog/categories', icon: Scissors },
   { key: 'providers', href: '/dashboard/service-providers', icon: ContactRound },
-  { key: 'customers', href: '#customers', icon: UsersRound, disabled: true },
+  { key: 'customers', href: '/dashboard/customers', icon: UsersRound },
   { key: 'visits', href: '#visits', icon: ShoppingBag, disabled: true },
   { key: 'reports', href: '#reports', icon: BarChart3, disabled: true },
   { key: 'branches', href: '#branches', icon: Store, disabled: true },
@@ -60,6 +60,7 @@ export function navigationFor(session: Session) {
         );
       }
       if (item.key === 'providers') return session.permissions.includes(permissions.providerRead);
+      if (item.key === 'customers') return session.permissions.includes(permissions.customerRead);
       return (
         item.key !== 'settings' || session.permissions.includes(permissions.tenantSettingsView)
       );

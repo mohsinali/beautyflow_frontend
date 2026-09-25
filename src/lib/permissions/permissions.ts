@@ -28,6 +28,10 @@ export const permissions = {
   providerUpdate: 'service-provider:update',
   providerDeactivate: 'service-provider:deactivate',
   providerManageQualifications: 'service-provider:manage-qualifications',
+  customerCreate: 'customer:create',
+  customerRead: 'customer:read',
+  customerUpdate: 'customer:update',
+  customerDeactivate: 'customer:deactivate',
   platformTenantView: 'platform.tenant.view',
 } as const;
 
@@ -59,9 +63,13 @@ const ownerPermissions = [
   permissions.providerUpdate,
   permissions.providerDeactivate,
   permissions.providerManageQualifications,
+  permissions.customerCreate,
+  permissions.customerRead,
+  permissions.customerUpdate,
+  permissions.customerDeactivate,
 ];
 
-const staffPermissions = [
+const serviceProviderPermissions = [
   permissions.branchView,
   permissions.profileViewOwn,
   permissions.serviceCategoryRead,
@@ -69,8 +77,17 @@ const staffPermissions = [
   permissions.providerRead,
 ];
 
+const receptionistPermissions = [
+  ...serviceProviderPermissions,
+  permissions.customerCreate,
+  permissions.customerRead,
+  permissions.customerUpdate,
+  permissions.customerDeactivate,
+];
+
 export function permissionsForRoles(platformRole: PlatformRole | null, tenantRole?: TenantRole) {
   if (platformRole === 'SUPER_ADMIN') return [permissions.platformTenantView];
   if (tenantRole === 'SALON_OWNER') return ownerPermissions;
-  return tenantRole ? staffPermissions : [];
+  if (tenantRole === 'RECEPTIONIST') return receptionistPermissions;
+  return tenantRole === 'SERVICE_PROVIDER' ? serviceProviderPermissions : [];
 }
