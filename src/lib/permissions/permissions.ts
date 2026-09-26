@@ -32,6 +32,18 @@ export const permissions = {
   customerRead: 'customer:read',
   customerUpdate: 'customer:update',
   customerDeactivate: 'customer:deactivate',
+  visitCreate: 'visit:create',
+  visitRead: 'visit:read',
+  visitUpdate: 'visit:update',
+  visitStart: 'visit:start',
+  visitComplete: 'visit:complete',
+  visitCancel: 'visit:cancel',
+  visitItemUpdate: 'visit-item:update',
+  visitItemStart: 'visit-item:start',
+  visitItemComplete: 'visit-item:complete',
+  visitItemCancel: 'visit-item:cancel',
+  visitOverridePrice: 'visit:override-price',
+  visitApplyDiscount: 'visit:apply-discount',
   platformTenantView: 'platform.tenant.view',
 } as const;
 
@@ -67,6 +79,18 @@ const ownerPermissions = [
   permissions.customerRead,
   permissions.customerUpdate,
   permissions.customerDeactivate,
+  permissions.visitCreate,
+  permissions.visitRead,
+  permissions.visitUpdate,
+  permissions.visitStart,
+  permissions.visitComplete,
+  permissions.visitCancel,
+  permissions.visitItemUpdate,
+  permissions.visitItemStart,
+  permissions.visitItemComplete,
+  permissions.visitItemCancel,
+  permissions.visitOverridePrice,
+  permissions.visitApplyDiscount,
 ];
 
 const serviceProviderPermissions = [
@@ -83,6 +107,16 @@ const receptionistPermissions = [
   permissions.customerRead,
   permissions.customerUpdate,
   permissions.customerDeactivate,
+  permissions.visitCreate,
+  permissions.visitRead,
+  permissions.visitUpdate,
+  permissions.visitStart,
+  permissions.visitComplete,
+  permissions.visitCancel,
+  permissions.visitItemUpdate,
+  permissions.visitItemStart,
+  permissions.visitItemComplete,
+  permissions.visitItemCancel,
 ];
 
 export function permissionsForRoles(platformRole: PlatformRole | null, tenantRole?: TenantRole) {

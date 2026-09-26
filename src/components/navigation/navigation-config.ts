@@ -7,6 +7,7 @@ import {
   Scissors,
   Settings,
   ShoppingBag,
+  BadgePlus,
   Store,
   UsersRound,
 } from 'lucide-react';
@@ -26,7 +27,8 @@ const owner: NavigationItem[] = [
   { key: 'catalog', href: '/dashboard/catalog/categories', icon: Scissors },
   { key: 'providers', href: '/dashboard/service-providers', icon: ContactRound },
   { key: 'customers', href: '/dashboard/customers', icon: UsersRound },
-  { key: 'visits', href: '#visits', icon: ShoppingBag, disabled: true },
+  { key: 'pos', href: '/dashboard/pos', icon: BadgePlus },
+  { key: 'visits', href: '/dashboard/visits', icon: ShoppingBag },
   { key: 'reports', href: '#reports', icon: BarChart3, disabled: true },
   { key: 'branches', href: '#branches', icon: Store, disabled: true },
   { key: 'staff', href: '#staff', icon: CalendarHeart, disabled: true },
@@ -36,7 +38,7 @@ const owner: NavigationItem[] = [
 const byTenantRole: Record<TenantRole, NavigationItem[]> = {
   SALON_OWNER: owner,
   RECEPTIONIST: owner.filter((item) =>
-    ['dashboard', 'catalog', 'providers', 'customers', 'visits'].includes(item.key),
+    ['dashboard', 'catalog', 'providers', 'customers', 'pos', 'visits'].includes(item.key),
   ),
   SERVICE_PROVIDER: owner.filter((item) =>
     ['dashboard', 'catalog', 'providers'].includes(item.key),
@@ -61,6 +63,8 @@ export function navigationFor(session: Session) {
       }
       if (item.key === 'providers') return session.permissions.includes(permissions.providerRead);
       if (item.key === 'customers') return session.permissions.includes(permissions.customerRead);
+      if (item.key === 'pos') return session.permissions.includes(permissions.visitCreate);
+      if (item.key === 'visits') return session.permissions.includes(permissions.visitRead);
       return (
         item.key !== 'settings' || session.permissions.includes(permissions.tenantSettingsView)
       );
