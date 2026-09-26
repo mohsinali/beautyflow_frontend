@@ -146,6 +146,18 @@ export function ProviderList() {
           </Button>
         )}
       </header>
+      <nav className="flex gap-2 border-b" aria-label={t('providers.views')}>
+        <Button variant="ghost" className="rounded-b-none border-b-2 border-primary" asChild>
+          <Link href="/dashboard/service-providers">{t('providers.providersTab')}</Link>
+        </Button>
+        {canCreate && (
+          <Button variant="ghost" className="rounded-b-none" asChild>
+            <Link href="/dashboard/service-providers?view=invitations">
+              {t('providers.invitationsTab')}
+            </Link>
+          </Button>
+        )}
+      </nav>
       <Card>
         <CardContent className="pt-5 sm:pt-6">
           <div className="grid gap-3 lg:grid-cols-[minmax(14rem,1fr)_minmax(10rem,.5fr)_minmax(10rem,.5fr)_10rem]">

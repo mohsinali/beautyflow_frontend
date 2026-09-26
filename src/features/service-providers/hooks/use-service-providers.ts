@@ -3,19 +3,23 @@ import { queryKeys } from '@/lib/api/query-client';
 import {
   assignProviderBranch,
   assignProviderService,
+  cancelProviderInvitation,
   createServiceProvider,
   getServiceProvider,
   listAssignableServices,
   listAvailableMemberships,
   listBranches,
+  listProviderInvitations,
   listServiceProviders,
   removeProviderBranch,
   removeProviderPhoto,
   removeProviderService,
   resendProviderInvitation,
+  resendManagedProviderInvitation,
   replaceProviderServices,
   setServiceProviderActive,
   updateServiceProvider,
+  updateProviderInvitationEmail,
   uploadProviderPhoto,
 } from '../api/service-providers-api';
 import type {
@@ -91,6 +95,46 @@ export function useResendProviderInvitation(tenantId: string, providerId: string
   return useMutation({
     mutationFn: () => resendProviderInvitation(providerId),
     onSuccess: () => invalidate(providerId),
+  });
+}
+
+export function useProviderInvitations(tenantId: string, page: number, enabled: boolean) {
+  return useQuery({
+    queryKey: queryKeys.serviceProviderInvitationList(tenantId, page),
+    queryFn: ({ signal }) => listProviderInvitations(page, signal),
+    enabled: Boolean(tenantId) && enabled,
+    placeholderData: keepPreviousData,
+  });
+}
+
+function useInvitationInvalidation(tenantId: string) {
+  const client = useQueryClient();
+  return () =>
+    client.invalidateQueries({ queryKey: queryKeys.serviceProviderInvitations(tenantId) });
+}
+
+export function useResendManagedProviderInvitation(tenantId: string) {
+  const invalidate = useInvitationInvalidation(tenantId);
+  return useMutation({
+    mutationFn: resendManagedProviderInvitation,
+    onSuccess: invalidate,
+  });
+}
+
+export function useUpdateProviderInvitationEmail(tenantId: string) {
+  const invalidate = useInvitationInvalidation(tenantId);
+  return useMutation({
+    mutationFn: ({ invitationId, email }: { invitationId: string; email: string }) =>
+      updateProviderInvitationEmail(invitationId, email),
+    onSuccess: invalidate,
+  });
+}
+
+export function useCancelProviderInvitation(tenantId: string) {
+  const invalidate = useInvitationInvalidation(tenantId);
+  return useMutation({
+    mutationFn: cancelProviderInvitation,
+    onSuccess: invalidate,
   });
 }
 export function useUpdateServiceProvider(tenantId: string) {

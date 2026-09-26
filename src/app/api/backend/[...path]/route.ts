@@ -12,7 +12,7 @@ const allowed = [
   /^platform\/tenants(?:\/[^/]+)?$/,
   /^service-categories(?:\/[^/]+(?:\/(?:deactivate|reactivate))?)?$/,
   /^catalog-services(?:\/[^/]+(?:\/(?:deactivate|reactivate))?)?$/,
-  /^service-providers(?:\/(?:available-memberships|onboard|[^/]+(?:\/(?:deactivate|reactivate|photo|resend-invitation|qualifications(?:\/[^/]+)?))?))?$/,
+  /^service-providers(?:\/(?:available-memberships|onboard|invitations(?:\/[^/]+\/(?:resend|email|cancel))?|[^/]+(?:\/(?:deactivate|reactivate|photo|resend-invitation|qualifications(?:\/[^/]+)?))?))?$/,
   /^memberships\/[^/]+\/branches\/[^/]+$/,
   /^customers(?:\/[^/]+(?:\/(?:deactivate|reactivate))?)?$/,
   /^visits(?:\/[^/]+(?:\/(?:start|complete|cancel)|\/items(?:\/[^/]+(?:\/(?:start|complete|cancel))?)?)?)?$/,

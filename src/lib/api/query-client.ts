@@ -63,6 +63,10 @@ export const queryKeys = {
   ) => [...queryKeys.serviceProviders(tenantId), 'list', params] as const,
   serviceProviderDetail: (tenantId: string, providerId: string) =>
     [...queryKeys.serviceProviders(tenantId), 'detail', providerId] as const,
+  serviceProviderInvitations: (tenantId: string) =>
+    [...queryKeys.serviceProviders(tenantId), 'invitations'] as const,
+  serviceProviderInvitationList: (tenantId: string, page: number) =>
+    [...queryKeys.serviceProviderInvitations(tenantId), 'list', { page }] as const,
   customers: (tenantId: string) => ['tenant', tenantId, 'customers'] as const,
   customerList: (
     tenantId: string,

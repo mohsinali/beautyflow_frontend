@@ -10,6 +10,7 @@ import type {
   ServiceProvider,
   ServiceProviderList,
   ServiceProviderListParams,
+  ProviderInvitationList,
 } from '../types/service-provider';
 
 interface Envelope<T> {
@@ -65,6 +66,30 @@ export const setServiceProviderActive = (providerId: string, isActive: boolean) 
 export const resendProviderInvitation = (providerId: string) =>
   apiRequest<Envelope<{ invitationStatus: 'SENT' | 'PENDING' }>>(
     `/api/backend/service-providers/${providerId}/resend-invitation`,
+    { method: 'POST' },
+  ).then((value) => value.data);
+
+export const listProviderInvitations = (page: number, signal?: AbortSignal) =>
+  apiRequest<Envelope<ProviderInvitationList>>(
+    `/api/backend/service-providers/invitations?page=${page}&pageSize=20`,
+    { signal },
+  ).then((value) => value.data);
+
+export const resendManagedProviderInvitation = (invitationId: string) =>
+  apiRequest<Envelope<{ invitationStatus: 'SENT' | 'PENDING' }>>(
+    `/api/backend/service-providers/invitations/${invitationId}/resend`,
+    { method: 'POST' },
+  ).then((value) => value.data);
+
+export const updateProviderInvitationEmail = (invitationId: string, email: string) =>
+  apiRequest<Envelope<{ invitationStatus: 'SENT' | 'PENDING' }>>(
+    `/api/backend/service-providers/invitations/${invitationId}/email`,
+    { method: 'PATCH', body: { email } },
+  ).then((value) => value.data);
+
+export const cancelProviderInvitation = (invitationId: string) =>
+  apiRequest<Envelope<{ cancelled: true }>>(
+    `/api/backend/service-providers/invitations/${invitationId}/cancel`,
     { method: 'POST' },
   ).then((value) => value.data);
 

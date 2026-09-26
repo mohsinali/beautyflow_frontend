@@ -78,3 +78,20 @@ export interface OnboardProviderResult {
   accountState: 'INVITATION_REQUIRED' | 'ACCOUNT_ACTIVE';
   invitationStatus: 'SENT' | 'PENDING';
 }
+
+export type ProviderInvitationStatus = 'PENDING' | 'EXPIRED' | 'CANCELLED' | 'ACCEPTED';
+
+export interface ProviderInvitation {
+  id: string;
+  name: string;
+  email: string;
+  status: ProviderInvitationStatus;
+  deliveryStatus: 'SENT' | 'PENDING';
+  invitedAt: string;
+  expiresAt: string;
+}
+
+export interface ProviderInvitationList {
+  items: ProviderInvitation[];
+  meta: { page: number; pageSize: number; total: number; pageCount: number };
+}
