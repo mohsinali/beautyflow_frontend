@@ -43,6 +43,16 @@ export interface VisitItemInput {
   chargedPrice?: string;
   discountAmount?: string;
 }
+export interface ProviderWorkItem {
+  id: string;
+  visitId: string;
+  serviceNameSnapshot: string;
+  status: VisitItemStatus;
+  startedAt: string | null;
+  completedAt: string | null;
+  createdAt: string;
+  visit: { customer: { id: string; name: string } };
+}
 export interface CreateVisitInput {
   customerId: string;
   defaultProviderId?: string | null;

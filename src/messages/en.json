@@ -93,6 +93,35 @@
     "platformTitle": "Platform workspace",
     "platformBody": "You are signed in as a platform administrator. Tenant operational context is intentionally not assumed."
   },
+  "providerWork": {
+    "title": "My Work Today",
+    "description": "Here are the treatments assigned to you today.",
+    "assignedToday": "Assigned Today",
+    "inProgress": "In Progress",
+    "completedToday": "Completed Today",
+    "treatmentCount": "{count, plural, one {# Treatment} other {# Treatments}}",
+    "startTreatment": "Start Treatment",
+    "completeTreatment": "Complete Treatment",
+    "startedSuccess": "Treatment started successfully.",
+    "completedSuccess": "Treatment completed successfully.",
+    "startedAt": "Started At",
+    "completedAt": "Completed At",
+    "statuses": {
+      "PENDING": "Pending",
+      "IN_PROGRESS": "In Progress",
+      "COMPLETED": "Completed",
+      "CANCELLED": "Cancelled"
+    },
+    "selectBranch": "Select an active branch to view today's treatments.",
+    "loading": "Loading today's treatments…",
+    "empty": "No treatments assigned for today.",
+    "noActive": "No active treatments remaining.",
+    "loadFailed": "Failed to load today's treatments.",
+    "loadFailedWithId": "Failed to load today's treatments. Request ID: {requestId}",
+    "updateFailed": "Failed to update treatment.",
+    "updateFailedWithId": "Failed to update treatment. Request ID: {requestId}",
+    "retry": "Retry"
+  },
   "settings": {
     "title": "Settings",
     "general": "General settings",

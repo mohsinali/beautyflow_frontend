@@ -42,6 +42,7 @@ export const permissions = {
   visitItemStart: 'visit-item:start',
   visitItemComplete: 'visit-item:complete',
   visitItemCancel: 'visit-item:cancel',
+  visitItemReadOwn: 'visit-item:read-own',
   visitOverridePrice: 'visit:override-price',
   visitApplyDiscount: 'visit:apply-discount',
   platformTenantView: 'platform.tenant.view',
@@ -99,6 +100,9 @@ const serviceProviderPermissions = [
   permissions.serviceCategoryRead,
   permissions.catalogRead,
   permissions.providerRead,
+  permissions.visitItemReadOwn,
+  permissions.visitItemStart,
+  permissions.visitItemComplete,
 ];
 
 const receptionistPermissions = [

@@ -93,6 +93,35 @@
     "platformTitle": "مساحة عمل المنصة",
     "platformBody": "تم تسجيل دخولك كمسؤول للمنصة. لا يتم افتراض سياق تشغيلي لأي صالون."
   },
+  "providerWork": {
+    "title": "عملي اليوم",
+    "description": "إليك العلاجات المسندة إليك اليوم.",
+    "assignedToday": "المسند اليوم",
+    "inProgress": "قيد التنفيذ",
+    "completedToday": "المكتمل اليوم",
+    "treatmentCount": "{count, plural, zero {لا علاجات} one {علاج واحد} two {علاجان} few {# علاجات} many {# علاجًا} other {# علاج}}",
+    "startTreatment": "بدء العلاج",
+    "completeTreatment": "إكمال العلاج",
+    "startedSuccess": "تم بدء العلاج بنجاح.",
+    "completedSuccess": "تم إكمال العلاج بنجاح.",
+    "startedAt": "بدأ في",
+    "completedAt": "اكتمل في",
+    "statuses": {
+      "PENDING": "قيد الانتظار",
+      "IN_PROGRESS": "قيد التنفيذ",
+      "COMPLETED": "مكتمل",
+      "CANCELLED": "ملغى"
+    },
+    "selectBranch": "اختر فرعًا نشطًا لعرض علاجات اليوم.",
+    "loading": "جارٍ تحميل علاجات اليوم…",
+    "empty": "لا توجد علاجات مسندة إليك اليوم.",
+    "noActive": "لا توجد علاجات نشطة متبقية.",
+    "loadFailed": "تعذر تحميل علاجات اليوم.",
+    "loadFailedWithId": "تعذر تحميل علاجات اليوم. معرّف الطلب: {requestId}",
+    "updateFailed": "تعذر تحديث العلاج.",
+    "updateFailedWithId": "تعذر تحديث العلاج. معرّف الطلب: {requestId}",
+    "retry": "إعادة المحاولة"
+  },
   "settings": {
     "title": "الإعدادات",
     "general": "الإعدادات العامة",

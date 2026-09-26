@@ -84,6 +84,8 @@ export const queryKeys = {
     [...queryKeys.visits(tenantId, branchId), 'list', params] as const,
   visitDetail: (tenantId: string, visitId: string) =>
     ['tenant', tenantId, 'visits', 'detail', visitId] as const,
+  providerWorkToday: (tenantId: string, branchId: string, date: string) =>
+    [...queryKeys.branch(tenantId, branchId, 'provider-work'), 'today', date] as const,
   eligibleProviders: (tenantId: string, branchId: string, serviceId: string) =>
     [...queryKeys.branch(tenantId, branchId, 'eligible-providers'), serviceId] as const,
 };

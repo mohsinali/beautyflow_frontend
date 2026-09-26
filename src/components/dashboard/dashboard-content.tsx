@@ -14,12 +14,20 @@ import { useLocale, useTranslations } from 'next-intl';
 import { GreetingBanner } from './greeting-banner';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useSession } from '@/providers/session-provider';
+import { ProviderWorkToday } from './provider-work-today';
 
 export function DashboardContent() {
   const t = useTranslations();
   const locale = useLocale();
   const { session, activeBranch } = useSession();
   if (!session) return null;
+  if (session.tenant?.role === 'SERVICE_PROVIDER')
+    return (
+      <div className="space-y-6" data-locale={locale}>
+        <GreetingBanner />
+        <ProviderWorkToday />
+      </div>
+    );
   const role = session.platformRole ?? session.tenant?.role;
   const context = session.platformRole
     ? [

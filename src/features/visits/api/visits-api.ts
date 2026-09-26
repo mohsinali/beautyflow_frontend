@@ -6,6 +6,7 @@ import type {
   VisitItem,
   VisitItemInput,
   VisitList,
+  ProviderWorkItem,
   VisitStatus,
 } from '../types/visit';
 interface Envelope<T> {
@@ -35,6 +36,11 @@ export const listVisits = (
     (r) => r.data,
   );
 };
+export const getMyWork = (branchId: string, date: string, signal?: AbortSignal) =>
+  apiRequest<Envelope<ProviderWorkItem[]>>(
+    `/api/backend/visits/my-work?date=${encodeURIComponent(date)}`,
+    { branchId, signal },
+  ).then((r) => r.data);
 export const getVisit = (id: string, signal?: AbortSignal) =>
   apiRequest<Envelope<Visit>>(`/api/backend/visits/${id}`, { signal }).then((r) => r.data);
 export const createVisit = (branchId: string, input: CreateVisitInput) =>

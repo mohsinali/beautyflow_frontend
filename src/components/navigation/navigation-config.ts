@@ -40,9 +40,7 @@ const byTenantRole: Record<TenantRole, NavigationItem[]> = {
   RECEPTIONIST: owner.filter((item) =>
     ['dashboard', 'catalog', 'providers', 'customers', 'pos', 'visits'].includes(item.key),
   ),
-  SERVICE_PROVIDER: owner.filter((item) =>
-    ['dashboard', 'catalog', 'providers'].includes(item.key),
-  ),
+  SERVICE_PROVIDER: owner.filter((item) => ['dashboard', 'catalog'].includes(item.key)),
 };
 
 const platform: NavigationItem[] = [
