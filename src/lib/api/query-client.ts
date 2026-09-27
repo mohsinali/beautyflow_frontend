@@ -17,6 +17,9 @@ export function createQueryClient() {
 
 export const queryKeys = {
   session: ['session'] as const,
+  branches: (tenantId: string) => ['tenant', tenantId, 'branches'] as const,
+  branchList: (tenantId: string, page: number) =>
+    [...queryKeys.branches(tenantId), 'list', { page }] as const,
   serviceCategories: (tenantId: string) => ['tenant', tenantId, 'service-categories'] as const,
   serviceCategoryList: (
     tenantId: string,
