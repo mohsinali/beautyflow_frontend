@@ -10,6 +10,7 @@ import type { ReportRange } from '../types/report';
 import { BranchScope, MetricCard, Money, ReportState } from './report-ui';
 
 type Tab = 'salon' | 'providers' | 'services';
+type DatePreset = 'today' | 'yesterday' | 'thisMonth';
 const iso = (date: Date) => date.toISOString().slice(0, 10);
 const defaults = () => {
   const to = new Date();
@@ -17,6 +18,27 @@ const defaults = () => {
   from.setDate(to.getDate() - 6);
   return { from: iso(from), to: iso(to) };
 };
+
+function currentDate(timeZone: string) {
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).formatToParts(new Date());
+  const values = Object.fromEntries(parts.map((part) => [part.type, part.value]));
+  return `${values.year}-${values.month}-${values.day}`;
+}
+
+function presetRange(preset: DatePreset, timeZone: string) {
+  const today = currentDate(timeZone);
+  if (preset === 'today') return { from: today, to: today };
+  if (preset === 'thisMonth') return { from: `${today.slice(0, 7)}-01`, to: today };
+  const yesterday = new Date(`${today}T00:00:00Z`);
+  yesterday.setUTCDate(yesterday.getUTCDate() - 1);
+  const date = iso(yesterday);
+  return { from: date, to: date };
+}
 
 export function ReportsPage() {
   const t = useTranslations('reports');
@@ -26,11 +48,28 @@ export function ReportsPage() {
   const [branch, setBranch] = useState(activeBranch?.id ?? 'all');
   const [fromDate, setFrom] = useState(initial.from);
   const [toDate, setTo] = useState(initial.to);
+  const [datePreset, setDatePreset] = useState<DatePreset | null>(null);
   const [providerId, setProvider] = useState('');
   const [categoryId, setCategory] = useState('');
   const [serviceId, setService] = useState('');
   const tenantId = session?.tenant?.id ?? '';
   const currency = session?.tenant?.currencyCode ?? 'USD';
+  const timeZoneForBranch = (branchId: string) =>
+    branchId === 'all'
+      ? (session?.tenant?.timezone ?? 'UTC')
+      : (session?.accessibleBranches.find((item) => item.id === branchId)?.timezone ??
+        session?.tenant?.timezone ??
+        'UTC');
+  const applyPreset = (preset: DatePreset, timeZone = timeZoneForBranch(branch)) => {
+    const next = presetRange(preset, timeZone);
+    setDatePreset(preset);
+    setFrom(next.from);
+    setTo(next.to);
+  };
+  const changeBranch = (branchId: string) => {
+    setBranch(branchId);
+    if (datePreset) applyPreset(datePreset, timeZoneForBranch(branchId));
+  };
   const range: ReportRange = {
     fromDate,
     toDate,
@@ -68,6 +107,7 @@ export function ReportsPage() {
     setBranch(activeBranch?.id ?? 'all');
     setFrom(initial.from);
     setTo(initial.to);
+    setDatePreset(null);
     setProvider('');
     setCategory('');
     setService('');
@@ -93,18 +133,49 @@ export function ReportsPage() {
       </div>
       <Card>
         <CardContent className="grid gap-3 pt-5 sm:grid-cols-2 lg:grid-cols-5">
+          <div className="grid gap-1.5 sm:col-span-2 lg:col-span-5">
+            <span className="text-sm font-medium">{t('quickRange')}</span>
+            <div className="flex flex-wrap gap-2">
+              {(['today', 'yesterday', 'thisMonth'] as DatePreset[]).map((preset) => (
+                <Button
+                  key={preset}
+                  type="button"
+                  size="sm"
+                  variant={datePreset === preset ? 'default' : 'outline'}
+                  aria-pressed={datePreset === preset}
+                  onClick={() => applyPreset(preset)}
+                >
+                  {t(preset)}
+                </Button>
+              ))}
+            </div>
+          </div>
           <label className="grid gap-1.5 text-sm font-medium">
             <span>{t('from')}</span>
-            <Input type="date" value={fromDate} onChange={(e) => setFrom(e.target.value)} />
+            <Input
+              type="date"
+              value={fromDate}
+              onChange={(e) => {
+                setDatePreset(null);
+                setFrom(e.target.value);
+              }}
+            />
           </label>
           <label className="grid gap-1.5 text-sm font-medium">
             <span>{t('to')}</span>
-            <Input type="date" value={toDate} onChange={(e) => setTo(e.target.value)} />
+            <Input
+              type="date"
+              value={toDate}
+              onChange={(e) => {
+                setDatePreset(null);
+                setTo(e.target.value);
+              }}
+            />
           </label>
           <BranchScope
             branches={session?.accessibleBranches ?? []}
             value={branch}
-            onChange={setBranch}
+            onChange={changeBranch}
           />
           {tab === 'providers' && (
             <Select
