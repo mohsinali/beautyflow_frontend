@@ -16,6 +16,7 @@ const allowed = [
   /^memberships\/[^/]+\/branches\/[^/]+$/,
   /^customers(?:\/[^/]+(?:\/(?:deactivate|reactivate))?)?$/,
   /^visits(?:\/[^/]+(?:\/(?:start|complete|cancel|mark-paid)|\/items(?:\/[^/]+(?:\/(?:start|complete|cancel))?)?)?)?$/,
+  /^reports\/(?:dashboard|salon-performance|provider-performance|service-performance)$/,
 ];
 
 async function proxy(request: Request, context: { params: Promise<{ path: string[] }> }) {

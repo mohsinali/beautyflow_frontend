@@ -15,6 +15,7 @@ import { GreetingBanner } from './greeting-banner';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useSession } from '@/providers/session-provider';
 import { ProviderWorkToday } from './provider-work-today';
+import { OwnerDashboard } from '@/features/reports/components/owner-dashboard';
 
 export function DashboardContent() {
   const t = useTranslations();
@@ -28,6 +29,7 @@ export function DashboardContent() {
         <ProviderWorkToday />
       </div>
     );
+  if (session.tenant?.role === 'SALON_OWNER') return <OwnerDashboard />;
   const role = session.platformRole ?? session.tenant?.role;
   const context = session.platformRole
     ? [

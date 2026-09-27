@@ -91,4 +91,7 @@ export const queryKeys = {
     [...queryKeys.branch(tenantId, branchId, 'provider-work'), 'today', date] as const,
   eligibleProviders: (tenantId: string, branchId: string, serviceId: string) =>
     [...queryKeys.branch(tenantId, branchId, 'eligible-providers'), serviceId] as const,
+  reports: (tenantId: string) => ['tenant', tenantId, 'reports'] as const,
+  report: (tenantId: string, kind: string, params: object) =>
+    [...queryKeys.reports(tenantId), kind, params] as const,
 };

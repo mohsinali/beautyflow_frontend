@@ -29,7 +29,7 @@ const owner: NavigationItem[] = [
   { key: 'customers', href: '/dashboard/customers', icon: UsersRound },
   { key: 'pos', href: '/dashboard/pos', icon: BadgePlus },
   { key: 'visits', href: '/dashboard/visits', icon: ShoppingBag },
-  { key: 'reports', href: '#reports', icon: BarChart3, disabled: true },
+  { key: 'reports', href: '/dashboard/reports', icon: BarChart3 },
   { key: 'branches', href: '/dashboard/branches', icon: Store },
   { key: 'staff', href: '#staff', icon: CalendarHeart, disabled: true },
   { key: 'settings', href: '/dashboard/settings', icon: Settings },
@@ -63,6 +63,7 @@ export function navigationFor(session: Session) {
       if (item.key === 'customers') return session.permissions.includes(permissions.customerRead);
       if (item.key === 'pos') return session.permissions.includes(permissions.visitCreate);
       if (item.key === 'visits') return session.permissions.includes(permissions.visitRead);
+      if (item.key === 'reports') return session.permissions.includes(permissions.reportView);
       if (item.key === 'branches') return session.permissions.includes(permissions.branchView);
       return (
         item.key !== 'settings' || session.permissions.includes(permissions.tenantSettingsView)

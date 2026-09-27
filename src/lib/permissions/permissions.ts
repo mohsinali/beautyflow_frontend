@@ -46,6 +46,8 @@ export const permissions = {
   visitOverridePrice: 'visit:override-price',
   visitApplyDiscount: 'visit:apply-discount',
   visitMarkPaid: 'visit:mark-paid',
+  reportView: 'report:view',
+  reportFinancialView: 'report:view-financial',
   platformTenantView: 'platform.tenant.view',
 } as const;
 
@@ -94,6 +96,8 @@ const ownerPermissions = [
   permissions.visitOverridePrice,
   permissions.visitApplyDiscount,
   permissions.visitMarkPaid,
+  permissions.reportView,
+  permissions.reportFinancialView,
 ];
 
 const serviceProviderPermissions = [
