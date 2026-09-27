@@ -76,7 +76,7 @@ function ServiceActions({
   onEdit: (element: HTMLButtonElement) => void;
   onStatus: (element: HTMLButtonElement) => void;
 }) {
-  const t = useTranslations('services');
+  const t = useTranslations('common');
   return (
     <div className="flex flex-wrap justify-end gap-2">
       {canEdit && (
@@ -443,7 +443,7 @@ export function ServicesList() {
                       {t('services.status')}
                     </th>
                     {hasActions && (
-                      <th scope="col" className="w-72 px-5 py-3 text-end font-medium">
+                      <th scope="col" className="w-52 px-5 py-3 text-end font-medium">
                         {t('services.actions')}
                       </th>
                     )}

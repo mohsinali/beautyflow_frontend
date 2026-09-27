@@ -82,7 +82,7 @@ function CategoryActions({
   onEdit: (element: HTMLButtonElement) => void;
   onStatus: (element: HTMLButtonElement) => void;
 }) {
-  const t = useTranslations('categories');
+  const t = useTranslations('common');
   return (
     <div className="flex flex-wrap justify-end gap-2">
       {canEdit && (

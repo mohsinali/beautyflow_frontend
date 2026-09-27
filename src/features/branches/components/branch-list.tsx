@@ -76,13 +76,13 @@ export function BranchList() {
           }}
         >
           <Pencil className="size-4" />
-          {t('branches.editShort')}
+          {t('common.edit')}
         </Button>
       )}
       {canStatus && (
         <Button size="sm" variant="ghost" onClick={() => setStatusBranch(branch)}>
           {branch.isActive ? <CircleOff className="size-4" /> : <RotateCcw className="size-4" />}
-          {t(branch.isActive ? 'branches.deactivateShort' : 'branches.activateShort')}
+          {t(branch.isActive ? 'common.deactivate' : 'common.activate')}
         </Button>
       )}
     </div>

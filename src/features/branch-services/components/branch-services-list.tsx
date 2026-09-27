@@ -399,7 +399,7 @@ export function BranchServicesList() {
                             onClick={(event) => openConfigure(service, event.currentTarget)}
                           >
                             <Settings2 className="size-4" aria-hidden="true" />
-                            {t('branchServices.configureService')}
+                            {t('common.configure')}
                           </Button>
                         )}
                       </CardContent>
@@ -485,7 +485,7 @@ export function BranchServicesList() {
                                   onClick={(event) => openConfigure(service, event.currentTarget)}
                                 >
                                   <Settings2 className="size-4" aria-hidden="true" />
-                                  {t('branchServices.configureService')}
+                                  {t('common.configure')}
                                 </Button>
                                 {tenantInactive && (
                                   <p className="mt-1 max-w-52 text-xs text-muted-foreground">

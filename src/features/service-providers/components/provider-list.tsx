@@ -305,7 +305,7 @@ export function ProviderList() {
                   <div className="flex flex-wrap justify-end gap-2">
                     <Button asChild size="sm" variant="outline">
                       <Link href={`/dashboard/service-providers/${provider.id}`}>
-                        {t('providers.viewProfile')}
+                        {t('common.view')}
                       </Link>
                     </Button>
                     {canEdit && (
@@ -319,7 +319,7 @@ export function ProviderList() {
                         }}
                       >
                         <Pencil className="size-4" />
-                        {t('providers.edit')}
+                        {t('common.edit')}
                       </Button>
                     )}
                     {canStatus && (
@@ -329,7 +329,7 @@ export function ProviderList() {
                         disabled={statusMutation.isPending}
                         onClick={() => void toggleStatus(provider)}
                       >
-                        {provider.isActive ? t('providers.deactivate') : t('providers.activate')}
+                        {provider.isActive ? t('common.deactivate') : t('common.activate')}
                       </Button>
                     )}
                   </div>
@@ -386,14 +386,14 @@ export function ProviderList() {
                         <div className="flex justify-end gap-2">
                           <Button asChild size="sm" variant="outline">
                             <Link href={`/dashboard/service-providers/${provider.id}`}>
-                              {t('providers.viewProfile')}
+                              {t('common.view')}
                             </Link>
                           </Button>
                           {canEdit && (
                             <Button
                               size="icon"
                               variant="ghost"
-                              aria-label={t('providers.edit')}
+                              aria-label={t('common.edit')}
                               onClick={(event) => {
                                 setEditing(provider);
                                 setFormTrigger(event.currentTarget);
@@ -411,8 +411,8 @@ export function ProviderList() {
                               onClick={() => void toggleStatus(provider)}
                             >
                               {provider.isActive
-                                ? t('providers.deactivate')
-                                : t('providers.activate')}
+                                ? t('common.deactivate')
+                                : t('common.activate')}
                             </Button>
                           )}
                         </div>

@@ -222,7 +222,7 @@ export function CustomerList() {
                           {canEdit && (
                             <Button size="sm" variant="outline" onClick={() => openEdit(customer)}>
                               <Pencil className="size-4" />
-                              {t('customers.editShort')}
+                              {t('common.edit')}
                             </Button>
                           )}
                           {canStatus && (
@@ -238,8 +238,8 @@ export function CustomerList() {
                               )}
                               {t(
                                 customer.isActive
-                                  ? 'customers.deactivateShort'
-                                  : 'customers.activateShort',
+                                  ? 'common.deactivate'
+                                  : 'common.activate',
                               )}
                             </Button>
                           )}
@@ -277,14 +277,14 @@ export function CustomerList() {
                     {canEdit && (
                       <Button size="sm" variant="outline" onClick={() => openEdit(customer)}>
                         <Pencil className="size-4" />
-                        {t('customers.editShort')}
+                        {t('common.edit')}
                       </Button>
                     )}
                     {canStatus && (
                       <Button size="sm" variant="ghost" onClick={() => setStatusCustomer(customer)}>
                         {customer.isActive
-                          ? t('customers.deactivateShort')
-                          : t('customers.activateShort')}
+                          ? t('common.deactivate')
+                          : t('common.activate')}
                       </Button>
                     )}
                   </div>
