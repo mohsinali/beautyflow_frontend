@@ -128,3 +128,49 @@ input {
     transition-duration: 0.01ms !important;
   }
 }
+
+@media print {
+  @page {
+    margin: 14mm;
+  }
+
+  body:has(.receipt-print-root) {
+    background: #fff !important;
+    color: #111 !important;
+  }
+
+  body:has(.receipt-print-root) * {
+    visibility: hidden;
+  }
+
+  body:has(.receipt-print-root) .receipt-print-root,
+  body:has(.receipt-print-root) .receipt-print-root * {
+    visibility: visible;
+  }
+
+  body:has(.receipt-print-root) .receipt-print-root {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    max-width: none;
+    border: 0;
+    border-radius: 0;
+    background: #fff !important;
+    color: #111 !important;
+    box-shadow: none !important;
+  }
+
+  body:has(.receipt-print-root) .receipt-print-root section,
+  body:has(.receipt-print-root) .receipt-print-root table,
+  body:has(.receipt-print-root) .receipt-print-root tr {
+    break-inside: avoid;
+  }
+
+  body:has(.receipt-print-root) .receipt-print-root .text-muted-foreground {
+    color: #444 !important;
+  }
+
+  .receipt-no-print {
+    display: none !important;
+  }
+}

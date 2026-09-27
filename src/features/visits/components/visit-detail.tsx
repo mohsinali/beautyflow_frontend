@@ -12,6 +12,7 @@ import {
   CirclePlay,
   Pencil,
   Play,
+  ReceiptText,
   XCircle,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -96,6 +97,14 @@ export function VisitDetailScreen({ visitId }: { visitId: string }) {
           </p>
         </div>
         <div className="flex flex-wrap items-start gap-2">
+          {visit.status === 'COMPLETED' && (
+            <Button asChild variant="outline">
+              <Link href={`/dashboard/visits/${visit.id}/receipt`}>
+                <ReceiptText className="size-4" />
+                {t('viewReceipt')}
+              </Link>
+            </Button>
+          )}
           {['DRAFT', 'IN_PROGRESS'].includes(visit.status) && (
             <Button asChild variant="outline">
               <Link href={`/dashboard/pos?visitId=${visit.id}`}>

@@ -27,7 +27,15 @@ export interface Visit {
   paidBy: { id: string; firstName: string; lastName: string } | null;
   paymentNote: string | null;
   customer: Pick<Customer, 'id' | 'name' | 'phone'>;
-  branch: { id: string; name: string; code: string };
+  branch: {
+    id: string;
+    name: string;
+    code: string;
+    phone: string | null;
+    address: string | null;
+    city: string | null;
+    timezone: string | null;
+  };
   defaultProvider: { id: string; displayName: string } | null;
   items: VisitItem[];
   subtotal: string;
