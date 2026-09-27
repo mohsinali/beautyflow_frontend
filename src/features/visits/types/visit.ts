@@ -2,6 +2,7 @@ import type { Customer } from '@/features/customers/types/customer';
 
 export type VisitStatus = 'DRAFT' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
 export type VisitItemStatus = 'PENDING' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
+export type PaymentStatus = 'UNPAID' | 'PAID';
 export interface VisitItem {
   id: string;
   catalogServiceId: string;
@@ -20,6 +21,11 @@ export interface VisitItem {
 export interface Visit {
   id: string;
   status: VisitStatus;
+  paymentStatus: PaymentStatus;
+  paidAt: string | null;
+  paidByUserId: string | null;
+  paidBy: { id: string; firstName: string; lastName: string } | null;
+  paymentNote: string | null;
   customer: Pick<Customer, 'id' | 'name' | 'phone'>;
   branch: { id: string; name: string; code: string };
   defaultProvider: { id: string; displayName: string } | null;

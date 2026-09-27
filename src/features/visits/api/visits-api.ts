@@ -8,6 +8,7 @@ import type {
   VisitList,
   ProviderWorkItem,
   VisitStatus,
+  PaymentStatus,
 } from '../types/visit';
 interface Envelope<T> {
   data: T;
@@ -18,6 +19,7 @@ export const listVisits = (
     page: number;
     pageSize: number;
     status?: VisitStatus;
+    paymentStatus?: PaymentStatus;
     search?: string;
     dateFrom?: string;
     dateTo?: string;
@@ -29,6 +31,7 @@ export const listVisits = (
     pageSize: String(params.pageSize),
   });
   if (params.status) query.set('status', params.status);
+  if (params.paymentStatus) query.set('paymentStatus', params.paymentStatus);
   if (params.search) query.set('search', params.search);
   if (params.dateFrom) query.set('dateFrom', params.dateFrom);
   if (params.dateTo) query.set('dateTo', params.dateTo);
@@ -53,6 +56,11 @@ export const transitionVisit = (id: string, action: 'start' | 'complete' | 'canc
   apiRequest<Envelope<Visit>>(`/api/backend/visits/${id}/${action}`, { method: 'POST' }).then(
     (r) => r.data,
   );
+export const markVisitPaid = (id: string, paymentNote?: string) =>
+  apiRequest<Envelope<Visit>>(`/api/backend/visits/${id}/mark-paid`, {
+    method: 'POST',
+    body: { paymentNote },
+  }).then((r) => r.data);
 export const transitionVisitItem = (
   visitId: string,
   itemId: string,

@@ -10,7 +10,7 @@ import { Input } from '@/components/ui/input';
 import { queryKeys } from '@/lib/api/query-client';
 import { useActiveBranch, useCurrentTenant } from '@/providers/session-provider';
 import { listVisits } from '../api/visits-api';
-import type { VisitStatus } from '../types/visit';
+import type { PaymentStatus, VisitStatus } from '../types/visit';
 import { formatMoney } from '../lib/money';
 
 function dayBounds(offset: number) {
@@ -27,6 +27,7 @@ export function VisitListScreen() {
   const { activeBranch } = useActiveBranch();
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState<VisitStatus | ''>('');
+  const [paymentStatus, setPaymentStatus] = useState<PaymentStatus | ''>('');
   const [dateFilter, setDateFilter] = useState<'ALL' | 'TODAY' | 'YESTERDAY' | 'RANGE'>('TODAY');
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
@@ -41,7 +42,14 @@ export function VisitListScreen() {
               ...(dateTo ? { dateTo: new Date(`${dateTo}T23:59:59.999`).toISOString() } : {}),
             }
           : {};
-  const params = { page: 1, pageSize: 50, search, ...dates, ...(status ? { status } : {}) };
+  const params = {
+    page: 1,
+    pageSize: 50,
+    search,
+    ...dates,
+    ...(status ? { status } : {}),
+    ...(paymentStatus ? { paymentStatus } : {}),
+  };
   const query = useQuery({
     queryKey: queryKeys.visitList(tenant?.id ?? '', activeBranch?.id ?? '', params),
     queryFn: ({ signal }) => listVisits(activeBranch!.id, params, signal),
@@ -60,7 +68,7 @@ export function VisitListScreen() {
         </Button>
       </div>
       <Card className="p-4">
-        <div className="mb-4 grid gap-3 sm:grid-cols-2">
+        <div className="mb-4 grid gap-3 sm:grid-cols-3">
           <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -77,6 +85,16 @@ export function VisitListScreen() {
                 {t(`statuses.${value}`)}
               </option>
             ))}
+          </select>
+          <select
+            className="h-10 rounded-md border bg-background px-3"
+            value={paymentStatus}
+            aria-label={t('paymentStatus')}
+            onChange={(e) => setPaymentStatus(e.target.value as PaymentStatus | '')}
+          >
+            <option value="">{t('allPayments')}</option>
+            <option value="PAID">{t('paymentStatuses.PAID')}</option>
+            <option value="UNPAID">{t('paymentStatuses.UNPAID')}</option>
           </select>
         </div>
         <div className="mb-4 flex flex-wrap items-end gap-2">
@@ -137,6 +155,10 @@ export function VisitListScreen() {
         </div>
         {query.isLoading ? (
           <p>{t('loading')}</p>
+        ) : query.isError ? (
+          <p role="alert" className="py-10 text-center text-destructive">
+            {t('loadFailed')}
+          </p>
         ) : !query.data?.items.length ? (
           <p className="py-10 text-center text-muted-foreground">{t('noVisits')}</p>
         ) : (
@@ -144,7 +166,7 @@ export function VisitListScreen() {
             {query.data.items.map((visit) => (
               <div
                 key={visit.id}
-                className="grid gap-3 rounded-xl border p-4 sm:grid-cols-[1fr_auto_auto_auto_auto] sm:items-center"
+                className="grid gap-3 rounded-xl border p-4 sm:grid-cols-[1fr_auto_auto_auto_auto_auto] sm:items-center"
               >
                 <div>
                   <strong>{visit.customer.name}</strong>
@@ -155,8 +177,11 @@ export function VisitListScreen() {
                 <span>
                   {visit.items.length} {t('treatmentCount')}
                 </span>
-                <span className="rounded-full bg-muted px-3 py-1 text-xs font-medium">
+                <span className="flex items-center justify-center rounded-full bg-muted px-3 py-1 text-center text-xs font-medium">
                   {t(`statuses.${visit.status}`)}
+                </span>
+                <span className="rounded-full bg-muted px-3 py-1 text-xs font-medium">
+                  {t(`paymentStatuses.${visit.paymentStatus}`)}
                 </span>
                 <strong>
                   {formatMoney(visit.total)} {tenant?.currencyCode}

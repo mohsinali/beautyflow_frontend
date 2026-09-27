@@ -45,6 +45,7 @@ export const permissions = {
   visitItemReadOwn: 'visit-item:read-own',
   visitOverridePrice: 'visit:override-price',
   visitApplyDiscount: 'visit:apply-discount',
+  visitMarkPaid: 'visit:mark-paid',
   platformTenantView: 'platform.tenant.view',
 } as const;
 
@@ -92,6 +93,7 @@ const ownerPermissions = [
   permissions.visitItemCancel,
   permissions.visitOverridePrice,
   permissions.visitApplyDiscount,
+  permissions.visitMarkPaid,
 ];
 
 const serviceProviderPermissions = [
@@ -121,6 +123,7 @@ const receptionistPermissions = [
   permissions.visitItemStart,
   permissions.visitItemComplete,
   permissions.visitItemCancel,
+  permissions.visitMarkPaid,
 ];
 
 export function permissionsForRoles(platformRole: PlatformRole | null, tenantRole?: TenantRole) {

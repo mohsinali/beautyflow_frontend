@@ -15,7 +15,7 @@ const allowed = [
   /^service-providers(?:\/(?:available-memberships|onboard|invitations(?:\/[^/]+\/(?:resend|email|cancel))?|[^/]+(?:\/(?:deactivate|reactivate|photo|resend-invitation|qualifications(?:\/[^/]+)?))?))?$/,
   /^memberships\/[^/]+\/branches\/[^/]+$/,
   /^customers(?:\/[^/]+(?:\/(?:deactivate|reactivate))?)?$/,
-  /^visits(?:\/[^/]+(?:\/(?:start|complete|cancel)|\/items(?:\/[^/]+(?:\/(?:start|complete|cancel))?)?)?)?$/,
+  /^visits(?:\/[^/]+(?:\/(?:start|complete|cancel|mark-paid)|\/items(?:\/[^/]+(?:\/(?:start|complete|cancel))?)?)?)?$/,
 ];
 
 async function proxy(request: Request, context: { params: Promise<{ path: string[] }> }) {

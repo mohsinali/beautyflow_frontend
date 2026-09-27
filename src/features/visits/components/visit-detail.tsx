@@ -1,5 +1,6 @@
 'use client';
 import Link from 'next/link';
+import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
@@ -15,15 +16,27 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
 import { queryKeys } from '@/lib/api/query-client';
-import { useCurrentTenant } from '@/providers/session-provider';
-import { getVisit, transitionVisit, transitionVisitItem } from '../api/visits-api';
+import { permissions } from '@/lib/permissions/permissions';
+import { useCurrentTenant, useSession } from '@/providers/session-provider';
+import { getVisit, markVisitPaid, transitionVisit, transitionVisitItem } from '../api/visits-api';
 import { formatDiscount, formatMoney } from '../lib/money';
 
 export function VisitDetailScreen({ visitId }: { visitId: string }) {
   const t = useTranslations('visits');
   const tenant = useCurrentTenant();
+  const { session } = useSession();
   const client = useQueryClient();
+  const [paymentOpen, setPaymentOpen] = useState(false);
+  const [paymentNote, setPaymentNote] = useState('');
   const query = useQuery({
     queryKey: queryKeys.visitDetail(tenant?.id ?? '', visitId),
     queryFn: ({ signal }) => getVisit(visitId, signal),
@@ -42,12 +55,31 @@ export function VisitDetailScreen({ visitId }: { visitId: string }) {
     onSuccess: refresh,
     onError: () => toast.error(t('actionFailed')),
   });
+  const paymentAction = useMutation({
+    mutationFn: () => markVisitPaid(visitId, paymentNote.trim() || undefined),
+    onSuccess: async () => {
+      setPaymentOpen(false);
+      setPaymentNote('');
+      toast.success(t('markedPaid'));
+      await Promise.all([
+        refresh(),
+        client.invalidateQueries({
+          queryKey: queryKeys.visits(tenant?.id ?? '', query.data!.branch.id),
+        }),
+      ]);
+    },
+    onError: () => toast.error(t('markPaidFailed')),
+  });
   const visit = query.data;
   if (!visit) return <Card className="p-6">{t('loading')}</Card>;
   const canComplete =
     visit.status === 'IN_PROGRESS' &&
     visit.items.some((i) => i.status !== 'CANCELLED') &&
     visit.items.filter((i) => i.status !== 'CANCELLED').every((i) => i.status === 'COMPLETED');
+  const canMarkPaid =
+    visit.status === 'COMPLETED' &&
+    visit.paymentStatus === 'UNPAID' &&
+    Boolean(session?.permissions.includes(permissions.visitMarkPaid));
   return (
     <div className="space-y-5">
       <div className="flex flex-wrap justify-between gap-3">
@@ -121,7 +153,7 @@ export function VisitDetailScreen({ visitId }: { visitId: string }) {
                   {item.provider?.displayName ?? t('unassigned')}
                 </p>
               </div>
-              <span className="rounded-full bg-muted px-3 py-1 text-xs">
+              <span className="self-center rounded-full bg-muted px-3 py-1 text-center text-xs">
                 {t(`statuses.${item.status}`)}
               </span>
             </div>
@@ -180,6 +212,62 @@ export function VisitDetailScreen({ visitId }: { visitId: string }) {
           </span>
         </div>
       </Card>
+      <Card className="ms-auto max-w-md space-y-3 p-5">
+        <h2 className="text-lg font-semibold">{t('payment')}</h2>
+        <Info label={t('paymentStatus')} value={t(`paymentStatuses.${visit.paymentStatus}`)} />
+        <Info
+          label={t('finalAmount')}
+          value={`${formatMoney(visit.total)} ${tenant?.currencyCode ?? ''}`}
+        />
+        {visit.paidAt && (
+          <Info label={t('paidAt')} value={new Date(visit.paidAt).toLocaleString()} />
+        )}
+        {visit.paidBy && (
+          <Info
+            label={t('recordedBy')}
+            value={`${visit.paidBy.firstName} ${visit.paidBy.lastName}`}
+          />
+        )}
+        {visit.paymentNote && <Info label={t('paymentNote')} value={visit.paymentNote} />}
+        {canMarkPaid && <Button onClick={() => setPaymentOpen(true)}>{t('markAsPaid')}</Button>}
+      </Card>
+      <Dialog
+        open={paymentOpen}
+        onOpenChange={(open) => !paymentAction.isPending && setPaymentOpen(open)}
+      >
+        <DialogContent closeLabel={t('cancel')}>
+          <DialogTitle className="text-xl font-semibold">{t('markAsPaid')}</DialogTitle>
+          <DialogDescription className="mt-2 text-sm text-muted-foreground">
+            {t('paymentDisclaimer')}
+          </DialogDescription>
+          <div className="mt-5 space-y-4">
+            <Info
+              label={t('finalAmount')}
+              value={`${formatMoney(visit.total)} ${tenant?.currencyCode ?? ''}`}
+            />
+            <label className="block text-sm font-medium">
+              {t('paymentNote')}
+              <Input
+                className="mt-1"
+                value={paymentNote}
+                maxLength={1000}
+                onChange={(event) => setPaymentNote(event.target.value)}
+                placeholder={t('optional')}
+              />
+            </label>
+          </div>
+          <div className="mt-6 flex justify-end gap-2">
+            <DialogClose asChild>
+              <Button variant="outline" disabled={paymentAction.isPending}>
+                {t('cancel')}
+              </Button>
+            </DialogClose>
+            <Button onClick={() => paymentAction.mutate()} disabled={paymentAction.isPending}>
+              {paymentAction.isPending ? t('saving') : t('markAsPaid')}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
