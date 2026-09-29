@@ -27,6 +27,7 @@ import { BranchScope, Money, ReportState } from './report-ui';
 type Tab = 'salon' | 'providers' | 'services';
 type DatePreset = 'today' | 'yesterday' | 'thisMonth';
 type Sort = 'revenue' | 'treatments' | 'average';
+type KpiDecorationVariant = 'revenue' | 'visits' | 'treatments';
 const colors = ['#552044', '#9f4868', '#d68798', '#ebbdc5', '#f4dadd'];
 const iso = (date: Date) => date.toISOString().slice(0, 10);
 const amount = (value: string | null) => Number(value ?? 0) || 0;
@@ -161,14 +162,14 @@ export function ReportsPage() {
             tab === 'salon' &&
               'xl:grid-cols-[minmax(280px,1.45fr)_auto_minmax(145px,1fr)_minmax(145px,1fr)_minmax(180px,1.15fr)_auto_auto]',
             tab === 'providers' &&
-              'xl:grid-cols-[minmax(280px,1.45fr)_auto_minmax(145px,1fr)_minmax(145px,1fr)_minmax(170px,1.1fr)_minmax(170px,1.1fr)_auto_auto]',
+              'xl:grid-cols-[max-content_auto_minmax(145px,1fr)_minmax(145px,1fr)_minmax(170px,1.1fr)_minmax(170px,1.1fr)_auto_auto]',
             tab === 'services' &&
-              'xl:grid-cols-[minmax(260px,1.35fr)_auto_minmax(135px,.9fr)_minmax(135px,.9fr)_minmax(155px,1fr)_minmax(145px,1fr)_minmax(145px,1fr)_auto_auto]',
+              'xl:grid-cols-[max-content_auto_minmax(135px,.9fr)_minmax(135px,.9fr)_minmax(155px,1fr)_minmax(145px,1fr)_minmax(145px,1fr)_auto_auto]',
           )}
         >
-          <div className="space-y-2 md:col-span-2 xl:col-span-1">
+          <div className="space-y-2 md:col-span-2 xl:col-span-1 xl:min-w-max">
             <span className="text-sm font-semibold">{t('quickRange')}</span>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-2 xl:flex-nowrap">
               {(['today', 'yesterday', 'thisMonth'] as DatePreset[]).map((preset) => (
                 <button
                   key={preset}
@@ -328,16 +329,24 @@ function Kpi({
   label,
   children,
   support,
+  decoration,
 }: {
   icon: ComponentType<{ className?: string }>;
   label: string;
   children: ReactNode;
   support?: ReactNode;
+  decoration?: KpiDecorationVariant;
 }) {
   return (
-    <Card className="relative overflow-hidden p-5">
+    <Card
+      className={cn(
+        'relative overflow-hidden p-5',
+        decoration && 'bg-gradient-to-l from-muted/30 via-card to-card rtl:bg-gradient-to-r',
+      )}
+    >
       <div className="absolute -bottom-8 -end-6 size-28 rounded-full bg-muted/55 blur-2xl" />
-      <div className="relative flex items-center gap-4">
+      {decoration && <KpiCardDecoration variant={decoration} />}
+      <div className="relative z-10 flex items-center gap-4">
         <span className="grid size-14 shrink-0 place-items-center rounded-full bg-muted text-secondary">
           <Icon className="size-6" />
         </span>
@@ -350,6 +359,43 @@ function Kpi({
         </div>
       </div>
     </Card>
+  );
+}
+
+function KpiCardDecoration({ variant }: { variant: KpiDecorationVariant }) {
+  const paths: Record<KpiDecorationVariant, string[]> = {
+    revenue: [
+      'M4 66 C30 58 42 72 66 54 S104 38 124 24 S150 22 176 8',
+      'M8 78 C38 66 52 76 78 60 S116 47 138 32 S158 27 180 18',
+    ],
+    visits: [
+      'M4 70 C26 50 48 64 68 48 S102 58 122 35 S154 34 178 12',
+      'M6 80 C32 65 50 72 72 58 S105 65 128 44 S158 43 180 24',
+    ],
+    treatments: [
+      'M4 72 C24 68 38 48 58 54 S88 68 108 44 S142 42 178 10',
+      'M6 82 C28 77 42 61 62 66 S91 76 114 55 S147 51 180 28',
+    ],
+  };
+
+  return (
+    <svg
+      aria-hidden="true"
+      focusable="false"
+      viewBox="0 0 184 88"
+      fill="none"
+      className="pointer-events-none absolute end-2 top-1/2 hidden h-auto w-[clamp(8rem,34%,11rem)] -translate-y-1/2 text-secondary opacity-[0.18] min-[420px]:block"
+    >
+      {paths[variant].map((path, index) => (
+        <path
+          key={path}
+          d={path}
+          stroke="currentColor"
+          strokeWidth={index === 0 ? 2.25 : 1.5}
+          strokeLinecap="round"
+        />
+      ))}
+    </svg>
   );
 }
 function Heading({
@@ -387,17 +433,28 @@ function Salon({
   return (
     <div className="space-y-5">
       <div className="grid gap-3 md:grid-cols-3">
-        <Kpi icon={WalletCards} label={t('revenueRecorded')} support={t('selectedPeriod')}>
+        <Kpi
+          icon={WalletCards}
+          label={t('revenueRecorded')}
+          support={t('selectedPeriod')}
+          decoration="revenue"
+        >
           <Money value={s.revenueRecorded} currency={currency} />
         </Kpi>
         <Kpi
           icon={CalendarDays}
           label={t('completedVisits')}
           support={t('ofTotalVisits', { total: s.visits })}
+          decoration="visits"
         >
           {s.completedVisits}
         </Kpi>
-        <Kpi icon={Sparkles} label={t('treatmentsCompleted')} support={t('selectedPeriod')}>
+        <Kpi
+          icon={Sparkles}
+          label={t('treatmentsCompleted')}
+          support={t('selectedPeriod')}
+          decoration="treatments"
+        >
           {s.completedTreatments}
         </Kpi>
       </div>
@@ -508,17 +565,28 @@ function Providers({ rows, currency }: { rows: ProviderPerformanceRow[]; currenc
   return (
     <div className="space-y-5">
       <div className="grid gap-3 md:grid-cols-3">
-        <Kpi icon={WalletCards} label={t('revenueHandled')} support={t('selectedPeriod')}>
+        <Kpi
+          icon={WalletCards}
+          label={t('revenueHandled')}
+          support={t('selectedPeriod')}
+          decoration="revenue"
+        >
           <Money value={String(total)} currency={currency} />
         </Kpi>
         <Kpi
           icon={CalendarDays}
           label={t('treatmentsCompleted')}
           support={t('acrossProviders', { count: rows.length })}
+          decoration="treatments"
         >
           {treatments}
         </Kpi>
-        <Kpi icon={UsersRound} label={t('activeProviders')} support={t('withRecordedActivity')}>
+        <Kpi
+          icon={UsersRound}
+          label={t('activeProviders')}
+          support={t('withRecordedActivity')}
+          decoration="visits"
+        >
           {rows.length}
         </Kpi>
       </div>
@@ -638,17 +706,28 @@ function Services({ rows, currency }: { rows: ServicePerformanceRow[]; currency:
   return (
     <div className="space-y-5">
       <div className="grid gap-3 md:grid-cols-3">
-        <Kpi icon={WalletCards} label={t('revenueHandled')} support={t('selectedPeriod')}>
+        <Kpi
+          icon={WalletCards}
+          label={t('revenueHandled')}
+          support={t('selectedPeriod')}
+          decoration="revenue"
+        >
           <Money value={String(total)} currency={currency} />
         </Kpi>
         <Kpi
           icon={Scissors}
           label={t('treatmentsCompleted')}
           support={t('acrossServices', { count: rows.length })}
+          decoration="treatments"
         >
           {treatments}
         </Kpi>
-        <Kpi icon={Sparkles} label={t('activeCategories')} support={t('withRecordedActivity')}>
+        <Kpi
+          icon={Sparkles}
+          label={t('activeCategories')}
+          support={t('withRecordedActivity')}
+          decoration="visits"
+        >
           {new Set(rows.map((row) => row.categoryId)).size}
         </Kpi>
       </div>
