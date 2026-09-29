@@ -26,6 +26,22 @@ export async function listCatalogServices(params: CatalogServiceListParams, sign
   return response.data;
 }
 
+export async function getCatalogService(serviceId: string, signal?: AbortSignal) {
+  const response = await apiRequest<Envelope<CatalogService>>(
+    `/api/backend/catalog-services/${serviceId}`,
+    { signal },
+  );
+  return response.data;
+}
+
+export async function replaceServiceProviders(serviceId: string, providerIds: string[]) {
+  const response = await apiRequest<Envelope<{ providerIds: string[] }>>(
+    `/api/backend/catalog-services/${serviceId}/providers`,
+    { method: 'PUT', body: { providerIds } },
+  );
+  return response.data;
+}
+
 export async function createCatalogService(input: CreateCatalogServiceInput) {
   const response = await apiRequest<Envelope<CatalogService>>('/api/backend/catalog-services', {
     method: 'POST',

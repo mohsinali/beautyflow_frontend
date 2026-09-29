@@ -34,6 +34,27 @@ export async function listServiceProviders(
   }).then((value) => value.data);
 }
 
+export async function listServiceProvidersForAssignment(
+  includeInactive: boolean,
+  signal?: AbortSignal,
+) {
+  const items: ServiceProvider[] = [];
+  for (const isActive of includeInactive ? [true, false] : [true]) {
+    let page = 1;
+    let pageCount = 1;
+    do {
+      const result = await listServiceProviders(
+        { search: '', branchId: '', catalogServiceId: '', isActive, page, pageSize: 100 },
+        signal,
+      );
+      items.push(...result.items);
+      pageCount = result.meta.pageCount;
+      page += 1;
+    } while (page <= pageCount);
+  }
+  return [...new Map(items.map((provider) => [provider.id, provider])).values()];
+}
+
 export const getServiceProvider = (providerId: string, signal?: AbortSignal) =>
   apiRequest<Envelope<ServiceProvider>>(`/api/backend/service-providers/${providerId}`, {
     signal,

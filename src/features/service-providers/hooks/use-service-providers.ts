@@ -11,6 +11,7 @@ import {
   listBranches,
   listProviderInvitations,
   listServiceProviders,
+  listServiceProvidersForAssignment,
   removeProviderBranch,
   removeProviderPhoto,
   removeProviderService,
@@ -38,6 +39,17 @@ export const useServiceProviders = (
     queryFn: ({ signal }) => listServiceProviders(params, signal),
     enabled: Boolean(tenantId) && enabled,
     placeholderData: keepPreviousData,
+  });
+
+export const useServiceProvidersForAssignment = (
+  tenantId: string,
+  includeInactive: boolean,
+  enabled: boolean,
+) =>
+  useQuery({
+    queryKey: [...queryKeys.serviceProviders(tenantId), 'assignment-list', { includeInactive }],
+    queryFn: ({ signal }) => listServiceProvidersForAssignment(includeInactive, signal),
+    enabled: Boolean(tenantId) && enabled,
   });
 
 export const useServiceProvider = (tenantId: string, providerId: string, enabled: boolean) =>

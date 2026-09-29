@@ -13,6 +13,7 @@ import {
   Search,
   X,
 } from 'lucide-react';
+import Link from 'next/link';
 import { useLocale, useTranslations } from 'next-intl';
 import { useEffect, useMemo, useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -53,9 +54,13 @@ function ServiceIdentity({ service }: { service: CatalogService }) {
   const t = useTranslations('services');
   return (
     <div className="min-w-0">
-      <p className="font-semibold" dir="auto">
+      <Link
+        className="font-semibold text-foreground underline-offset-4 hover:text-primary hover:underline"
+        dir="auto"
+        href={`/dashboard/catalog/services/${service.id}`}
+      >
         {service.name}
-      </p>
+      </Link>
       <p className="mt-1 truncate text-xs text-muted-foreground" dir="auto">
         {service.code || t('noCode')}
       </p>

@@ -36,6 +36,8 @@ export const queryKeys = {
       pageSize: number;
     },
   ) => [...queryKeys.catalogServices(tenantId), 'list', params] as const,
+  catalogServiceDetail: (tenantId: string, serviceId: string) =>
+    [...queryKeys.catalogServices(tenantId), 'detail', serviceId] as const,
   branchServices: (tenantId: string, branchId: string) =>
     queryKeys.branch(tenantId, branchId, 'catalog-services'),
   branchServiceList: (

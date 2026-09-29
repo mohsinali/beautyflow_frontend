@@ -2,7 +2,9 @@ import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tansta
 import { queryKeys } from '@/lib/api/query-client';
 import {
   createCatalogService,
+  getCatalogService,
   listCatalogServices,
+  replaceServiceProviders,
   setCatalogServiceActive,
   updateCatalogService,
 } from '../api/services-api';
@@ -22,6 +24,26 @@ export function useCatalogServices(
     queryFn: ({ signal }) => listCatalogServices(params, signal),
     enabled: Boolean(tenantId) && enabled,
     placeholderData: keepPreviousData,
+  });
+}
+
+export function useCatalogService(tenantId: string, serviceId: string, enabled: boolean) {
+  return useQuery({
+    queryKey: queryKeys.catalogServiceDetail(tenantId, serviceId),
+    queryFn: ({ signal }) => getCatalogService(serviceId, signal),
+    enabled: Boolean(tenantId && serviceId) && enabled,
+  });
+}
+
+export function useReplaceServiceProviders(tenantId: string, serviceId: string) {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (providerIds: string[]) => replaceServiceProviders(serviceId, providerIds),
+    onSuccess: () =>
+      Promise.all([
+        client.invalidateQueries({ queryKey: queryKeys.catalogServiceDetail(tenantId, serviceId) }),
+        client.invalidateQueries({ queryKey: queryKeys.serviceProviders(tenantId) }),
+      ]),
   });
 }
 
