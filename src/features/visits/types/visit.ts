@@ -65,7 +65,11 @@ export interface ProviderWorkItem {
   startedAt: string | null;
   completedAt: string | null;
   createdAt: string;
-  visit: { customer: { id: string; name: string } };
+  catalogService: { durationMinutes: number | null };
+  visit: {
+    startedAt: string | null;
+    customer: { id: string; name: string };
+  };
 }
 export interface CreateVisitInput {
   customerId: string;

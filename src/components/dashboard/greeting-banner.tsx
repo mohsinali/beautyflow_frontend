@@ -3,7 +3,7 @@
 import { useFormatter, useLocale, useTranslations } from 'next-intl';
 import { useSession } from '@/providers/session-provider';
 
-export function GreetingBanner() {
+export function GreetingBanner({ supportingText }: { supportingText?: string }) {
   const t = useTranslations('dashboard');
   const locale = useLocale();
   const format = useFormatter();
@@ -22,7 +22,7 @@ export function GreetingBanner() {
   const tenantName = session.tenant?.name ?? 'BeautyFlow';
   return (
     <section
-      className="relative isolate min-h-52 overflow-hidden rounded-[14px] border border-accent/25 bg-greeting p-6 sm:p-8 lg:p-10"
+      className="relative isolate min-h-44 overflow-hidden rounded-[14px] border border-accent/25 bg-greeting p-6 sm:p-8"
       aria-labelledby="greeting-title"
     >
       <div className="relative z-10 max-w-2xl">
@@ -42,7 +42,10 @@ export function GreetingBanner() {
           {t(greeting, { name: session.user.firstName })}
         </h1>
         <p className="mt-3 max-w-xl text-sm leading-6 text-muted-foreground sm:text-base">
-          {session.platformRole ? t('platformSupporting') : t('supporting', { tenant: tenantName })}
+          {supportingText ??
+            (session.platformRole
+              ? t('platformSupporting')
+              : t('supporting', { tenant: tenantName }))}
         </p>
       </div>
       <div

@@ -25,7 +25,7 @@ export function DashboardContent() {
   if (session.tenant?.role === 'SERVICE_PROVIDER')
     return (
       <div className="space-y-6" data-locale={locale}>
-        <GreetingBanner />
+        <GreetingBanner supportingText={t('providerWork.description')} />
         <ProviderWorkToday />
       </div>
     );
